@@ -5,10 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dart",
-            "program": "bin/main.dart",
+            "name": "Run Classic Archive",
+            "program": "classicarchive/lib/main.dart",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--web-renderer html"
+            ]
         }
     ]
 }
