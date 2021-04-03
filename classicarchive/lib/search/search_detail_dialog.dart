@@ -38,13 +38,15 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
       child: Container(
-        height: 400,
-        width: 400,
+        height: 600,
+        width: 800,
         child: Column(
           children: [
             Align(
               alignment: Alignment.topRight,
-              child: InkWell(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
+                child: InkWell(
                 splashColor: Colors.white,
                 customBorder: CircleBorder(),
                 onTap: () {
@@ -57,17 +59,31 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                   size: 40.0
                 ),
               ),
+            )),
+            detail == null ? 
+            Align(
+              alignment: Alignment.topLeft,
+              child: CircularProgressIndicator()
+            ) :
+            Align(
+              alignment: Alignment.topLeft,
+              child: Image.network(widget.itemResult.imgUrl, height: 200, width: 200)
             ),
             Center(
               child: Column(
                 children: [
-                  detail == null ? CircularProgressIndicator() : Text(detail.name),
-                  detail == null ? CircularProgressIndicator() :
+                  detail == null ? 
+                  CircularProgressIndicator() : 
+                  Text(detail.name,
+                    textAlign: TextAlign.center, 
+                    style: TextStyle(color: detail.rarityColor, fontSize: 20.0)),
+                  detail == null ? 
+                  CircularProgressIndicator() :
                   RichText(
                       text: TextSpan(
                         style: TextStyle(
                           fontSize: 16.0,
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
                         children: [
                           TextSpan(text: (detail.sellPrice.toString().padLeft(6,'0')[0] + detail.sellPrice.toString().padLeft(6,'0')[1]), 

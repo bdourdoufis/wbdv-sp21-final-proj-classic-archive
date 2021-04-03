@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
 class Item {
   final int itemId;
   final String name;
@@ -28,6 +32,10 @@ class ItemDetail {
   final int vendorPrice;
   final String itemLink;
   final String tooltipLabel;
+  final String tooltipRarity;
+
+  // The color corresponding to this items rarity, which is used when displaying its name.
+  final Color rarityColor;
 
   ItemDetail({
     this.itemId,
@@ -40,11 +48,39 @@ class ItemDetail {
     this.sellPrice,
     this.vendorPrice,
     this.itemLink,
-    this.tooltipLabel
+    this.tooltipLabel,
+    this.tooltipRarity,
+    this.rarityColor
   });
 
   static ItemDetail fromJson(dynamic json) {
-    //TODO: Store item rarity so it can be used for styling
+    Color tempColorStorage;
+    switch (json['tooltip'][0]['format']) {
+      case "Poor":
+        tempColorStorage = Color(0xFF9d9d9d);
+        break;
+      case "Common":
+        tempColorStorage = Colors.white;
+        break;
+      case "Uncommon":
+        tempColorStorage = Color(0xFF1EFF00);
+        break;
+      case "Rare":
+        tempColorStorage = Color(0xFF0070DD);
+        break;
+      case "Epic":
+        tempColorStorage = Color(0xFFA335EE);
+        break;
+      case "Legendary":
+        tempColorStorage = Color(0xFFFF8000);
+        break;
+      default:
+        // We should never reach this case, so display an error color if we do.
+        tempColorStorage = Colors.red;
+        break;
+    }
+
+
     //json['tooltip'][0]['format']
     return ItemDetail(
       itemId: json['itemId'],
@@ -57,7 +93,9 @@ class ItemDetail {
       sellPrice: json['sellPrice'],
       vendorPrice: json['vendorPrice'],
       itemLink: json['itemLink'],
-      tooltipLabel: json['tooltip'][0]['label']
+      tooltipLabel: json['tooltip'][0]['label'],
+      tooltipRarity: json['tooltip'][0]['format'],
+      rarityColor: tempColorStorage
     );
   }
 }

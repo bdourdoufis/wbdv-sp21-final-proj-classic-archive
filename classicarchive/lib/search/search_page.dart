@@ -96,7 +96,13 @@ class ItemResult extends StatelessWidget {
           child: Row(
             children: [
               Image.network(item.imgUrl),
-              Text(item.name)
+              Text(
+                item.name,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0
+                ),
+              )
             ],
           ),
       )),
