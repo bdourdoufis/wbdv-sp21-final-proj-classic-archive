@@ -13,6 +13,7 @@ class SearchPage extends StatefulWidget {
 class SearchPageState extends State<SearchPage> {
   SearchBar searchBar;
   List<ItemResult> resultSet = [];
+  bool currentlySearching = false;
 
   AppBar buildAppBar(BuildContext context) {
     return new AppBar(
@@ -21,11 +22,19 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 
+  void _searchItems(String searchQuery) {
+    setState(() {
+      currentlySearching = true;
+    });
+    searchBloc.searchItems(searchQuery);
+  }
+
   @override
   void initState() {
     super.initState();
     searchBloc.itemResult.listen((result) {
       setState(() {
+        currentlySearching = false;
         resultSet.clear();
         result.forEach((item) {
           resultSet.add(ItemResult(item: item));
@@ -36,7 +45,7 @@ class SearchPageState extends State<SearchPage> {
     searchBar = SearchBar(
       inBar: true,
       setState: setState,
-      onSubmitted: searchBloc.searchItems,
+      onSubmitted: _searchItems,
       buildDefaultAppBar: buildAppBar
     );
   }
@@ -46,14 +55,15 @@ class SearchPageState extends State<SearchPage> {
     return new Scaffold(
       appBar: searchBar.build(context),
       body: Center(
-        child: resultSet.length > 0 ? 
+        child: resultSet.length > 0 ?
         SingleChildScrollView(
           child: Column(
             children: [
               ...resultSet
             ],
           )
-        ) : Text("Click the magnifying glass to search!"),
+        ) : currentlySearching ?
+        CircularProgressIndicator() : Text("Click the magnifying glass to search!"),
       )
     );
   }
@@ -66,7 +76,8 @@ class ItemResult extends StatelessWidget {
 
   void _showResultDialog(BuildContext context) {
     showDialog(
-      context: context, 
+      context: context,
+      barrierDismissible: false,
       builder: (context) { 
         return ResultDetailDialog(itemResult: item); 
       }
