@@ -1,8 +1,9 @@
 import 'package:classicarchive/search/bloc/search_bloc.dart';
+import 'package:classicarchive/search/search_detail_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
 
-import 'models/item_model.dart';
+import 'models/item_models.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class SearchPageState extends State<SearchPage> {
 
   @override
   void initState() {
+    super.initState();
     searchBloc.itemResult.listen((result) {
       setState(() {
         resultSet.clear();
@@ -62,19 +64,31 @@ class ItemResult extends StatelessWidget {
 
   ItemResult({@required this.item});
 
-  //TODO: Add gesturedetector w/ onclick to open detail dialog
+  void _showResultDialog(BuildContext context) {
+    showDialog(
+      context: context, 
+      builder: (context) { 
+        return ResultDetailDialog(itemResult: item); 
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 100,
       child: Card(
-        child: Row(
-          children: [
-            Image.network(item.imgUrl),
-            Text(item.name)
-          ],
-        ),
-      ),
+        child: InkWell(
+          onTap: () {
+            _showResultDialog(context);
+          },
+          child: Row(
+            children: [
+              Image.network(item.imgUrl),
+              Text(item.name)
+            ],
+          ),
+      )),
     );
   }
 }
