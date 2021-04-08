@@ -31,8 +31,7 @@ class ItemDetail {
   final int sellPrice;
   final int vendorPrice;
   final String itemLink;
-  final String tooltipLabel;
-  final String tooltipRarity;
+  final List<String> tooltipLabels;
 
   // The color corresponding to this items rarity, which is used when displaying its name.
   final Color rarityColor;
@@ -48,8 +47,7 @@ class ItemDetail {
     this.sellPrice,
     this.vendorPrice,
     this.itemLink,
-    this.tooltipLabel,
-    this.tooltipRarity,
+    this.tooltipLabels,
     this.rarityColor
   });
 
@@ -80,6 +78,11 @@ class ItemDetail {
         break;
     }
 
+    List<String> labels = [];
+    for (int i = 1; i < json['tooltip'].length - 1; i++) {
+      labels.add(json['tooltip'][i]['label']);
+    }
+
 
     //json['tooltip'][0]['format']
     return ItemDetail(
@@ -93,8 +96,7 @@ class ItemDetail {
       sellPrice: json['sellPrice'],
       vendorPrice: json['vendorPrice'],
       itemLink: json['itemLink'],
-      tooltipLabel: json['tooltip'][0]['label'],
-      tooltipRarity: json['tooltip'][0]['format'],
+      tooltipLabels: labels,
       rarityColor: tempColorStorage
     );
   }

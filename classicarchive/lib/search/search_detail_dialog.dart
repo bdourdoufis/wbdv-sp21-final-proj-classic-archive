@@ -16,6 +16,8 @@ class ResultDetailDialog extends StatefulWidget {
 class ResultDetailDialogState extends State<ResultDetailDialog> {
   ItemDetail detail;
   StreamSubscription<ItemDetail> subscription;
+  // TODO: get this from the user session
+  bool favorited;
 
   @override
   void initState() {
@@ -29,6 +31,16 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
     Future.delayed(const Duration(milliseconds: 250), () {
       searchBloc.getItemDetail(widget.itemResult.itemId);
     });
+
+    favorited = false;
+  }
+
+  List<Text> _getLabelText() {
+    List<Text> labels = [];
+    detail.tooltipLabels.forEach((label) {
+      labels.add(Text(label, textAlign: TextAlign.left));
+    });
+    return labels;
   }
 
   // Builds a dialog containing detailed item information.
@@ -40,8 +52,22 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
       child: Container(
         height: 600,
         width: 800,
-        child: Column(
+        child: Stack(
           children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      favorited = !favorited; 
+                    });
+                  },
+                  icon: favorited ? Icon(Icons.favorite) : Icon(Icons.favorite_border)
+                  ),
+              )
+            ),
             Align(
               alignment: Alignment.topRight,
               child: Padding(
@@ -60,25 +86,21 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                 ),
               ),
             )),
-            detail == null ? 
-            Align(
-              alignment: Alignment.topLeft,
-              child: CircularProgressIndicator()
-            ) :
-            Align(
-              alignment: Alignment.topLeft,
-              child: Image.network(widget.itemResult.imgUrl, height: 200, width: 200)
-            ),
+            Center(
+          child: Container(
+            width: 600,
+            child: SingleChildScrollView(
+          child: Column(
+          children: [
+            detail == null ?
+            CircularProgressIndicator() :
             Center(
               child: Column(
                 children: [
-                  detail == null ? 
-                  CircularProgressIndicator() : 
+                  Image.network(widget.itemResult.imgUrl, scale: 0.33),
                   Text(detail.name,
                     textAlign: TextAlign.center, 
                     style: TextStyle(color: detail.rarityColor, fontSize: 20.0)),
-                  detail == null ? 
-                  CircularProgressIndicator() :
                   RichText(
                       text: TextSpan(
                         style: TextStyle(
@@ -94,11 +116,12 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                             style: TextStyle(color: Colors.brown))
                         ]
                       )
-                  )
+                  ),
+                  ..._getLabelText()
                 ]
               ),
         )]
-      ))
+      ))))]))
     );
   }
 }
