@@ -1,3 +1,5 @@
+import 'package:classicarchive/login/login_dialog.dart';
+import 'package:classicarchive/login/register_dialog.dart';
 import 'package:classicarchive/search/search_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +52,12 @@ class _HomePageState extends State<HomePage> {
         //which routes to the profile page
         TextButton(
             onPressed: () {
-              //Open login dialog
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return LoginDialog();
+                  });
             },
             child: Text(
               "Login",
@@ -64,7 +71,12 @@ class _HomePageState extends State<HomePage> {
         ),
         TextButton(
             onPressed: () {
-              //Open register dialog
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return RegisterDialog();
+                  });
             },
             child: Text("Register",
                 style: TextStyle(
