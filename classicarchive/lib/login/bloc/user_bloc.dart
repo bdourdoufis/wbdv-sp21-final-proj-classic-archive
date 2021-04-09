@@ -6,13 +6,13 @@ import 'package:rxdart/rxdart.dart';
 class SearchBloc {
   ItemSearchRepository repository = ItemSearchRepository();
 
-  final _itemFetcher = PublishSubject<List<Item>>();
+  /*final _itemFetcher = PublishSubject<List<Item>>();
 
   final _itemDetailFetcher = PublishSubject<ItemDetail>();
 
   Stream<List<Item>> get itemResult => _itemFetcher.stream;
 
-  Stream<ItemDetail> get itemDetail => _itemDetailFetcher.stream;
+  Stream<ItemDetail> get itemDetail => _itemDetailFetcher.stream;*/
 
   login(String username, String password) async {
     //Call java service for login here
@@ -30,10 +30,7 @@ class SearchBloc {
     //Get a list of users who favorited this item, need to make profile links
   }
 
-  dispose() {
-    _itemFetcher.close();
-    _itemDetailFetcher.close();
-  }
+  dispose() {}
 }
 
 final searchBloc = SearchBloc();

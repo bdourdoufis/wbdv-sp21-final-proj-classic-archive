@@ -1,4 +1,6 @@
 import 'package:classicarchive/home/home_page.dart';
+import 'package:classicarchive/login/login_dialog.dart';
+import 'package:classicarchive/login/register_dialog.dart';
 import 'package:classicarchive/search/bloc/search_bloc.dart';
 import 'package:classicarchive/search/search_detail_dialog.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +30,45 @@ class SearchPageState extends State<SearchPage> {
           onTap: () => Navigator.push(
               context, MaterialPageRoute(builder: (context) => HomePage()))),
       title: new Text("Classic Archive Item Search"),
-      actions: [searchBar.getSearchAction(context)],
+      actions: [
+        searchBar.getSearchAction(context),
+        SizedBox(
+          width: 25,
+        ),
+        TextButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return LoginDialog();
+                  });
+            },
+            child: Text(
+              "Login",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Colors.white),
+            )),
+        SizedBox(
+          width: 25,
+        ),
+        TextButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return RegisterDialog();
+                  });
+            },
+            child: Text("Register",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Colors.white)))
+      ],
     );
   }
 

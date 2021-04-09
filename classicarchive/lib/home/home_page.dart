@@ -110,6 +110,7 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover)),
           child: Center(
               child: Column(children: [
+            SizedBox(height: 50),
             AnimatedOpacity(
               opacity: titleOpacity,
               duration: Duration(seconds: 2),

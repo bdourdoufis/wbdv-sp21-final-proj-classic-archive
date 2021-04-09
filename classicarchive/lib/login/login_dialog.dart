@@ -1,3 +1,4 @@
+import 'package:classicarchive/login/register_dialog.dart';
 import 'package:flutter/material.dart';
 
 class LoginDialog extends StatefulWidget {
@@ -90,7 +91,24 @@ class _LoginDialogState extends State<LoginDialog> {
                         style: TextStyle(color: Colors.white, fontSize: 25),
                       ),
                     ),
-                  ))
+                  )),
+              AnimatedOpacity(
+                  opacity: formOpacity,
+                  duration: Duration(seconds: 1),
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return RegisterDialog();
+                            });
+                      },
+                      child: Text(
+                        "Register",
+                        style: TextStyle(color: Colors.blue, fontSize: 18),
+                      )))
             ],
           )),
     );
