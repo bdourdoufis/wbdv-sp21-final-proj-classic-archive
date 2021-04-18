@@ -26,10 +26,11 @@ class SearchPageState extends State<SearchPage> {
   AppBar buildAppBar(BuildContext context) {
     return new AppBar(
       leading: InkWell(
-          child: Image.asset("assets/images/logo.png"),
+          child: Icon(Icons.home),
           onTap: () => Navigator.push(
               context, MaterialPageRoute(builder: (context) => HomePage()))),
-      title: new Text("Classic Archive Item Search"),
+      title: new Text("Classic Archive Item Search",
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
       actions: [
         searchBar.getSearchAction(context),
         SizedBox(
@@ -46,10 +47,7 @@ class SearchPageState extends State<SearchPage> {
             },
             child: Text(
               "Login",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             )),
         SizedBox(
           width: 25,
@@ -64,10 +62,7 @@ class SearchPageState extends State<SearchPage> {
                   });
             },
             child: Text("Register",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.white)))
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)))
       ],
     );
   }
@@ -154,11 +149,13 @@ class ItemResult extends StatelessWidget {
                 child: Row(
                   children: [
                     Image.network(item.imgUrl),
-                    Text(
-                      item.name,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16.0),
-                    )
+                    Padding(
+                        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                        child: Text(
+                          item.name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ))
                   ],
                 ),
               ))),

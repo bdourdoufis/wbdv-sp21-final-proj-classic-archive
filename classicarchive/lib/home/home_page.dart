@@ -43,7 +43,8 @@ class _HomePageState extends State<HomePage> {
     // If not, show login/signup actions
     return AppBar(
       leading: InkWell(
-        child: Image.asset("assets/images/logo.png"),
+        //TODO: Make this the alliance symbol in alliance theme, horde symbol in horde theme
+        child: Image.asset("assets/images/horde.png"),
         onTap: () {},
       ),
       actions: [
@@ -61,10 +62,7 @@ class _HomePageState extends State<HomePage> {
             },
             child: Text(
               "Login",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             )),
         SizedBox(
           width: 25,
@@ -79,10 +77,7 @@ class _HomePageState extends State<HomePage> {
                   });
             },
             child: Text("Register",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.white)))
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)))
       ],
     );
   }
@@ -115,13 +110,19 @@ class _HomePageState extends State<HomePage> {
               opacity: titleOpacity,
               duration: Duration(seconds: 2),
               child: Text("Classic Archive",
-                  style: TextStyle(fontSize: 72, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontSize: 72,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
             ),
             AnimatedOpacity(
               opacity: subtitleOpacity,
               duration: Duration(seconds: 2),
               child: Text("World of Warcraft: Classic Item Database",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
             ),
             SizedBox(height: 200),
             Container(
@@ -141,15 +142,10 @@ class _HomePageState extends State<HomePage> {
                 width: 150,
                 height: 75,
                 child: ElevatedButton(
-                  child: Text("SEARCH",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-                  onPressed: () => _routeToSearch(context),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.green),
-                  ),
-                ))
+                    child: Text("SEARCH",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 32)),
+                    onPressed: () => _routeToSearch(context)))
           ])),
         ));
   }

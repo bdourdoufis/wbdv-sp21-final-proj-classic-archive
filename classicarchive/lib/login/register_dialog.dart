@@ -143,13 +143,13 @@ class _RegisterDialogState extends State<RegisterDialog> {
                               DropdownMenuItem(
                                   child: Text("Rogue",
                                       style: TextStyle(
-                                          color: Color(0xFFFFF569),
+                                          color: Color(0xFFD4AF37),
                                           fontWeight: FontWeight.bold)),
                                   value: "Rogue"),
                               DropdownMenuItem(
                                   child: Text("Priest",
                                       style: TextStyle(
-                                          color: Color(0xFFFFFFFF),
+                                          color: Color(0xFF696969),
                                           fontWeight: FontWeight.bold)),
                                   value: "Priest"),
                               DropdownMenuItem(

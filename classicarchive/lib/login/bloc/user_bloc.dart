@@ -3,16 +3,23 @@ import 'package:classicarchive/search/models/item_models.dart';
 import 'package:classicarchive/search/provider/item_api_search_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
-class SearchBloc {
+class UserBloc {
   ItemSearchRepository repository = ItemSearchRepository();
 
-  /*final _itemFetcher = PublishSubject<List<Item>>();
+  // Fetches a user given their credentials.
+  final _userFetcher = PublishSubject<User>();
 
-  final _itemDetailFetcher = PublishSubject<ItemDetail>();
+  // Fetches a list of items favorited by a given user.
+  final _userFavoritesFetcher = PublishSubject<List<Item>>();
 
-  Stream<List<Item>> get itemResult => _itemFetcher.stream;
+  // Fetches a list of users who have favorited a given item.
+  final _itemFavoritedFetcher = PublishSubject<List<User>>();
 
-  Stream<ItemDetail> get itemDetail => _itemDetailFetcher.stream;*/
+  Stream<User> get userResult => _userFetcher.stream;
+
+  Stream<List<Item>> get userFavorites => _userFavoritesFetcher.stream;
+
+  Stream<List<User>> get favoritedByUsers => _itemFavoritedFetcher.stream;
 
   login(String username, String password) async {
     //Call java service for login here
@@ -33,4 +40,4 @@ class SearchBloc {
   dispose() {}
 }
 
-final searchBloc = SearchBloc();
+final userBloc = UserBloc();
