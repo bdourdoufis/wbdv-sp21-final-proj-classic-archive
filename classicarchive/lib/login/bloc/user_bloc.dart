@@ -1,10 +1,11 @@
 import 'package:classicarchive/login/models/user.dart';
+import 'package:classicarchive/login/provider/user_login_register_repository.dart';
 import 'package:classicarchive/search/models/item_models.dart';
 import 'package:classicarchive/search/provider/item_api_search_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserBloc {
-  ItemSearchRepository repository = ItemSearchRepository();
+  UserRepository repository = UserRepository();
 
   // Fetches a user given their credentials.
   final _userFetcher = PublishSubject<User>();
@@ -22,11 +23,15 @@ class UserBloc {
   Stream<List<User>> get favoritedByUsers => _itemFavoritedFetcher.stream;
 
   login(String username, String password) async {
-    //Call java service for login here
+    User loggedInUser = await repository.login(username, password);
+    _userFetcher.add(loggedInUser);
   }
 
-  registerUser(String username, String password, String faction) async {
-    //Call java service for registration here
+  registerUser(
+      String username, String password, String faction, String favClass) async {
+    User registeredUser =
+        await repository.register(username, password, faction, favClass);
+    _userFetcher.add(registeredUser);
   }
 
   getUserFavorites(User user) async {

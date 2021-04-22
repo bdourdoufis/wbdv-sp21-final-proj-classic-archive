@@ -1,5 +1,7 @@
+import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/register_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 
 class LoginDialog extends StatefulWidget {
   @override
@@ -8,9 +10,17 @@ class LoginDialog extends StatefulWidget {
 
 class _LoginDialogState extends State<LoginDialog> {
   double formOpacity = 0.0;
+  final usernameFieldController = TextEditingController();
+  final passwordFieldController = TextEditingController();
 
   @override
   void initState() {
+    userBloc.userResult.listen((user) {
+      print("User " + user.username + " successfully logged in!");
+      FlutterSession().set("loggedIn", true);
+      FlutterSession().set("faction", user.faction);
+    });
+
     Future.delayed(Duration(milliseconds: 600), () {
       setState(() {
         formOpacity = 1.0;
@@ -53,6 +63,7 @@ class _LoginDialogState extends State<LoginDialog> {
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
                     child: TextField(
+                      controller: usernameFieldController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Username',
@@ -65,6 +76,7 @@ class _LoginDialogState extends State<LoginDialog> {
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
                     child: TextField(
+                      controller: passwordFieldController,
                       obscureText: true,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -84,7 +96,8 @@ class _LoginDialogState extends State<LoginDialog> {
                         borderRadius: BorderRadius.circular(20)),
                     child: TextButton(
                       onPressed: () {
-                        //TODO: Login action here
+                        userBloc.login(usernameFieldController.text,
+                            passwordFieldController.text);
                       },
                       child: Text(
                         'Login',

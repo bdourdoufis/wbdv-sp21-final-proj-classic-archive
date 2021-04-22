@@ -31,7 +31,6 @@ class ItemApiSearchClient {
       throw Exception("Error while retrieving item details");
     }
 
-
     final json = jsonDecode(response.body);
     return ItemDetail.fromJson(json);
   }
