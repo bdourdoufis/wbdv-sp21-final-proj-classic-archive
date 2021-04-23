@@ -2,6 +2,8 @@ import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
+import 'models/user.dart';
+
 class RegisterDialog extends StatefulWidget {
   @override
   _RegisterDialogState createState() => _RegisterDialogState();
@@ -16,9 +18,10 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
   @override
   void initState() {
-    userBloc.userResult.listen((user) {
-      print("User " + user.username + " successfully registered!");
-      FlutterSession().set("loggedIn", true);
+    userBloc.userResult.listen((user) async {
+      await FlutterSession().set("loggedIn", true);
+      await FlutterSession().set("loggedInUser", true);
+      Navigator.pop(context, user);
     });
 
     Future.delayed(Duration(milliseconds: 600), () {
@@ -46,7 +49,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
                       splashColor: Colors.white,
                       customBorder: CircleBorder(),
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pop(context, User());
                       },
                       child: Icon(Icons.close_rounded,
                           color: Colors.black, size: 40.0),

@@ -27,7 +27,6 @@ class SearchPageState extends State<SearchPage> {
   bool currentlySearching = false;
   String placeholderText;
   bool userLoggedIn = false;
-  String loggedInUsername;
   User loggedInUser;
 
   AppBar _buildLoadingAppBar(BuildContext context) {
@@ -65,7 +64,13 @@ class SearchPageState extends State<SearchPage> {
                   }).then((value) async {
                 if (value == true) {
                   getUserInfo();
-                  setState(() {});
+                  setState(() {
+                    searchBar = SearchBar(
+                        inBar: true,
+                        setState: setState,
+                        onSubmitted: _searchItems,
+                        buildDefaultAppBar: _buildLoggedInAppBar);
+                  });
                 }
               });
             },
@@ -83,7 +88,29 @@ class SearchPageState extends State<SearchPage> {
                   barrierDismissible: false,
                   builder: (context) {
                     return RegisterDialog();
-                  });
+                  }).then((user) async {
+                await FlutterSession().set("loggedIn", false);
+                await FlutterSession().set("loggedInUser", user);
+                ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
+                while ((currentTheme == ThemeMode.light &&
+                        user.faction == "Horde") ||
+                    (currentTheme == ThemeMode.dark &&
+                        user.faction == "Alliance") ||
+                    (currentTheme == ThemeMode.system &&
+                        user.faction == "Alliance")) {
+                  EasyDynamicTheme.of(context).changeTheme();
+                  currentTheme = EasyDynamicTheme.of(context).themeMode;
+                }
+                setState(() {
+                  userLoggedIn = true;
+                  loggedInUser = user;
+                  searchBar = SearchBar(
+                      inBar: true,
+                      setState: setState,
+                      onSubmitted: _searchItems,
+                      buildDefaultAppBar: _buildLoggedInAppBar);
+                });
+              });
             },
             child: Text("Register",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)))
@@ -110,7 +137,7 @@ class SearchPageState extends State<SearchPage> {
               _openProfileDialog();
             },
             child: Text(
-              loggedInUsername,
+              loggedInUser.username,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             )),
         SizedBox(
@@ -185,7 +212,7 @@ class SearchPageState extends State<SearchPage> {
             onSubmitted: _searchItems,
             buildDefaultAppBar: _buildLoggedInAppBar);
         loggedInUser = User.fromJson(userData);
-        loggedInUsername = loggedInUser.username;
+        return;
       } else {
         searchBar = SearchBar(
             inBar: true,
@@ -193,13 +220,14 @@ class SearchPageState extends State<SearchPage> {
             onSubmitted: _searchItems,
             buildDefaultAppBar: _buildLoggedOutAppBar);
       }
-    } else {
+    }
+    setState(() {
       searchBar = SearchBar(
           inBar: true,
           setState: setState,
           onSubmitted: _searchItems,
           buildDefaultAppBar: _buildLoggedOutAppBar);
-    }
+    });
   }
 
   T cast<T>(x) => x is T ? x : null;
@@ -219,10 +247,11 @@ class SearchPageState extends State<SearchPage> {
       if (user.userId != null) {
         await FlutterSession().set("loggedInUser", user);
         ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
-        if ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
+        while ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
             (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||
             (currentTheme == ThemeMode.system && user.faction == "Alliance")) {
           EasyDynamicTheme.of(context).changeTheme();
+          currentTheme = EasyDynamicTheme.of(context).themeMode;
         }
         setState(() {
           loggedInUser = user;

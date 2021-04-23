@@ -16,14 +16,14 @@ class _LoginDialogState extends State<LoginDialog> {
   @override
   void initState() {
     userBloc.userResult.listen((user) async {
-      print("User " + user.username + " successfully logged in!");
       await FlutterSession().set("loggedIn", true);
       await FlutterSession().set("loggedInUser", user);
       ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
-      if ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
+      while ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
           (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||
           (currentTheme == ThemeMode.system && user.faction == "Alliance")) {
         EasyDynamicTheme.of(context).changeTheme();
+        currentTheme = EasyDynamicTheme.of(context).themeMode;
       }
       Navigator.pop(context, true);
     });

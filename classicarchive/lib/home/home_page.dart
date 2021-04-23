@@ -18,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   double subtitleOpacity = 0.0;
   double searchButtonOpacity = 0.0;
   bool userLoggedIn = false;
-  String loggedInUsername;
 
   User loggedInUser;
 
@@ -55,7 +54,6 @@ class _HomePageState extends State<HomePage> {
       if (cast<bool>(loggedInResult) != null) {
         userLoggedIn = cast<bool>(loggedInResult);
         loggedInUser = User.fromJson(userData);
-        loggedInUsername = loggedInUser.username;
       } else {
         userLoggedIn = false;
       }
@@ -114,7 +112,27 @@ class _HomePageState extends State<HomePage> {
                   barrierDismissible: false,
                   builder: (context) {
                     return RegisterDialog();
+                  }).then((user) async {
+                if (user.userId != null) {
+                  await FlutterSession().set("loggedIn", false);
+                  await FlutterSession().set("loggedInUser", user);
+                  ThemeMode currentTheme =
+                      EasyDynamicTheme.of(context).themeMode;
+                  while ((currentTheme == ThemeMode.light &&
+                          user.faction == "Horde") ||
+                      (currentTheme == ThemeMode.dark &&
+                          user.faction == "Alliance") ||
+                      (currentTheme == ThemeMode.system &&
+                          user.faction == "Alliance")) {
+                    EasyDynamicTheme.of(context).changeTheme();
+                    currentTheme = EasyDynamicTheme.of(context).themeMode;
+                  }
+                  setState(() {
+                    userLoggedIn = true;
+                    loggedInUser = user;
                   });
+                }
+              });
             },
             child: Text("Register",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)))
@@ -137,7 +155,7 @@ class _HomePageState extends State<HomePage> {
               _openProfileDialog();
             },
             child: Text(
-              loggedInUsername,
+              loggedInUser.username,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             )),
         SizedBox(
@@ -179,10 +197,11 @@ class _HomePageState extends State<HomePage> {
       if (user.userId != null) {
         await FlutterSession().set("loggedInUser", user);
         ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
-        if ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
+        while ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
             (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||
             (currentTheme == ThemeMode.system && user.faction == "Alliance")) {
           EasyDynamicTheme.of(context).changeTheme();
+          currentTheme = EasyDynamicTheme.of(context).themeMode;
         }
         setState(() {
           loggedInUser = user;
