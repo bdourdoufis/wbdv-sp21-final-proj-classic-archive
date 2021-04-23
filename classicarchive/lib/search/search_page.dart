@@ -5,6 +5,7 @@ import 'package:classicarchive/search/bloc/search_bloc.dart';
 import 'package:classicarchive/search/search_detail_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
+import 'package:flutter_session/flutter_session.dart';
 
 import 'models/item_models.dart';
 
@@ -22,11 +23,25 @@ class SearchPageState extends State<SearchPage> {
   List<ItemResult> resultSet = [];
   bool currentlySearching = false;
   String placeholderText;
+  bool userLoggedIn = false;
+  String loggedInUsername;
 
-  AppBar buildAppBar(BuildContext context) {
+  AppBar _buildLoadingAppBar(BuildContext context) {
     return new AppBar(
       leading: InkWell(
           child: Icon(Icons.home),
+          onTap: () => Navigator.push(
+              context, MaterialPageRoute(builder: (context) => HomePage()))),
+      title: new Text("Classic Archive Item Search",
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+      actions: [searchBar.getSearchAction(context)],
+    );
+  }
+
+  AppBar _buildLoggedOutAppBar(BuildContext context) {
+    return new AppBar(
+      leading: InkWell(
+          child: Icon(Icons.home_outlined),
           onTap: () => Navigator.push(
               context, MaterialPageRoute(builder: (context) => HomePage()))),
       title: new Text("Classic Archive Item Search",
@@ -43,7 +58,21 @@ class SearchPageState extends State<SearchPage> {
                   barrierDismissible: false,
                   builder: (context) {
                     return LoginDialog();
-                  });
+                  }).then((value) async {
+                dynamic userResult =
+                    await FlutterSession().get("loggedInUserUsername");
+                setState(() {
+                  userLoggedIn = value;
+                  if (value == true) {
+                    loggedInUsername = cast<String>(userResult);
+                  }
+                  searchBar = SearchBar(
+                      inBar: true,
+                      setState: setState,
+                      onSubmitted: _searchItems,
+                      buildDefaultAppBar: _buildLoggedInAppBar);
+                });
+              });
             },
             child: Text(
               "Login",
@@ -67,6 +96,56 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 
+  AppBar _buildLoggedInAppBar(BuildContext context) {
+    return AppBar(
+      leading: InkWell(
+        //TODO: Make this the alliance symbol in alliance theme, horde symbol in horde theme
+        child: Icon(Icons.home_outlined),
+        onTap: () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomePage())),
+      ),
+      title: new Text("Classic Archive Item Search",
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+      actions: [
+        searchBar.getSearchAction(context),
+        SizedBox(
+          width: 25,
+        ),
+        TextButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return LoginDialog();
+                  });
+            },
+            child: Text(
+              loggedInUsername,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            )),
+        SizedBox(
+          width: 25,
+        ),
+        TextButton(
+            onPressed: () async {
+              await FlutterSession().set("loggedIn", false);
+              await FlutterSession().set("loggedInUserUsername", "");
+              setState(() {
+                userLoggedIn = false;
+                searchBar = SearchBar(
+                    inBar: true,
+                    setState: setState,
+                    onSubmitted: _searchItems,
+                    buildDefaultAppBar: _buildLoggedOutAppBar);
+              });
+            },
+            child: Text("Log Out",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)))
+      ],
+    );
+  }
+
   void _searchItems(String searchQuery) {
     setState(() {
       currentlySearching = true;
@@ -77,6 +156,7 @@ class SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
+    getUserInfo();
     searchBloc.itemResult.listen((result) {
       setState(() {
         if (result.isEmpty) {
@@ -95,7 +175,7 @@ class SearchPageState extends State<SearchPage> {
         inBar: true,
         setState: setState,
         onSubmitted: _searchItems,
-        buildDefaultAppBar: buildAppBar);
+        buildDefaultAppBar: _buildLoadingAppBar);
 
     if (widget.searchValue != null) {
       _searchItems(widget.searchValue);
@@ -103,6 +183,30 @@ class SearchPageState extends State<SearchPage> {
 
     placeholderText = "Click the magnifying glass to search!";
   }
+
+  void getUserInfo() async {
+    dynamic loggedInResult = await FlutterSession().get("loggedIn");
+    dynamic userResult = await FlutterSession().get("loggedInUserUsername");
+    if (cast<bool>(loggedInResult) != null) {
+      userLoggedIn = cast<bool>(loggedInResult);
+      if (userLoggedIn == true) {
+        searchBar = SearchBar(
+            inBar: true,
+            setState: setState,
+            onSubmitted: _searchItems,
+            buildDefaultAppBar: _buildLoggedInAppBar);
+      } else {
+        searchBar = SearchBar(
+            inBar: true,
+            setState: setState,
+            onSubmitted: _searchItems,
+            buildDefaultAppBar: _buildLoggedOutAppBar);
+      }
+    }
+    loggedInUsername = cast<String>(userResult);
+  }
+
+  T cast<T>(x) => x is T ? x : null;
 
   @override
   Widget build(BuildContext context) {

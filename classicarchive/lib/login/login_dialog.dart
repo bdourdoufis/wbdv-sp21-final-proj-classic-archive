@@ -1,5 +1,6 @@
 import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/register_dialog.dart';
+import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
@@ -15,10 +16,20 @@ class _LoginDialogState extends State<LoginDialog> {
 
   @override
   void initState() {
-    userBloc.userResult.listen((user) {
+    userBloc.userResult.listen((user) async {
       print("User " + user.username + " successfully logged in!");
-      FlutterSession().set("loggedIn", true);
-      FlutterSession().set("faction", user.faction);
+      await FlutterSession().set("loggedIn", true);
+      await FlutterSession().set("loggedInUserUsername", user.username);
+      await FlutterSession().set("loggedInUserPassword", user.password);
+      await FlutterSession().set("loggedInUserFaction", user.faction);
+      await FlutterSession().set("loggedInUserClass", user.favoriteClass);
+      ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
+      if ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
+          (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||
+          (currentTheme == ThemeMode.system && user.faction == "Alliance")) {
+        EasyDynamicTheme.of(context).changeTheme();
+      }
+      Navigator.pop(context, true);
     });
 
     Future.delayed(Duration(milliseconds: 600), () {
@@ -46,7 +57,7 @@ class _LoginDialogState extends State<LoginDialog> {
                       splashColor: Colors.white,
                       customBorder: CircleBorder(),
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pop(context, false);
                       },
                       child: Icon(Icons.close_rounded,
                           color: Colors.black, size: 40.0),

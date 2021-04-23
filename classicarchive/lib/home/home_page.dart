@@ -1,8 +1,10 @@
 import 'package:classicarchive/login/login_dialog.dart';
+import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/register_dialog.dart';
 import 'package:classicarchive/search/search_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,6 +15,9 @@ class _HomePageState extends State<HomePage> {
   double titleOpacity = 0.0;
   double subtitleOpacity = 0.0;
   double searchButtonOpacity = 0.0;
+  bool userLoggedIn = false;
+  String loggedInUsername;
+  String loggedInFaction;
 
   SnackBar emptySearchSnackBar;
 
@@ -20,6 +25,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
+    getUserInfo();
     //Fade in home page widgets
     Future.delayed(Duration(milliseconds: 300), () {
       setState(() {
@@ -38,13 +45,37 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  AppBar _buildAppBar(BuildContext context) {
-    // TODO: If user is logged in, show link to profile
-    // If not, show login/signup actions
+  void getUserInfo() async {
+    dynamic loggedInResult = await FlutterSession().get("loggedIn");
+    dynamic userResult = await FlutterSession().get("loggedInUserUsername");
+    dynamic userFaction = await FlutterSession().get("loggedInUserFaction");
+    setState(() {
+      if (cast<bool>(loggedInResult) != null) {
+        userLoggedIn = cast<bool>(loggedInResult);
+      }
+      loggedInUsername = cast<String>(userResult);
+      loggedInFaction = cast<String>(userFaction);
+    });
+  }
+
+  T cast<T>(x) => x is T ? x : null;
+
+  AppBar _buildLoadingAppBar(BuildContext context) {
     return AppBar(
       leading: InkWell(
         //TODO: Make this the alliance symbol in alliance theme, horde symbol in horde theme
-        child: Image.asset("assets/images/horde.png"),
+        child: Icon(Icons.home_outlined),
+        onTap: () {},
+      ),
+      actions: [],
+    );
+  }
+
+  AppBar _buildLoggedOutAppBar(BuildContext context) {
+    return AppBar(
+      leading: InkWell(
+        //TODO: Make this the alliance symbol in alliance theme, horde symbol in horde theme
+        child: Icon(Icons.home_outlined),
         onTap: () {},
       ),
       actions: [
@@ -58,7 +89,16 @@ class _HomePageState extends State<HomePage> {
                   barrierDismissible: false,
                   builder: (context) {
                     return LoginDialog();
-                  });
+                  }).then((value) async {
+                dynamic userResult =
+                    await FlutterSession().get("loggedInUserUsername");
+                setState(() {
+                  userLoggedIn = value;
+                  if (value == true) {
+                    loggedInUsername = cast<String>(userResult);
+                  }
+                });
+              });
             },
             child: Text(
               "Login",
@@ -82,6 +122,46 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  AppBar _buildLoggedInAppBar(BuildContext context) {
+    return AppBar(
+      leading: InkWell(
+        child: Icon(Icons.home_outlined),
+        onTap: () {},
+      ),
+      actions: [
+        //Only want to display these actions if not logged in
+        //If logged in, instead have a textbutton containing the username
+        //which routes to the profile page
+        TextButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return LoginDialog();
+                  });
+            },
+            child: Text(
+              loggedInUsername,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            )),
+        SizedBox(
+          width: 25,
+        ),
+        TextButton(
+            onPressed: () async {
+              await FlutterSession().set("loggedIn", false);
+              await FlutterSession().set("loggedInUserUsername", "");
+              setState(() {
+                userLoggedIn = false;
+              });
+            },
+            child: Text("Log Out",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)))
+      ],
+    );
+  }
+
   void _routeToSearch(BuildContext context) {
     if (controller.text.length > 0) {
       Navigator.push(
@@ -97,7 +177,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: _buildAppBar(context),
+        appBar: userLoggedIn
+            ? _buildLoggedInAppBar(context)
+            : _buildLoggedOutAppBar(context),
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(

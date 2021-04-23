@@ -35,11 +35,14 @@ dependencies:
   # Flutter Search Bar (https://pub.dev/packages/flutter_search_bar)
   flutter_search_bar: ^2.1.0
 
-  #HTTP Client (https://pub.dev/packages/http)
+  # HTTP Client (https://pub.dev/packages/http)
   http: ^0.13.1
 
   # Session Management (https://pub.dev/packages/flutter_session)
   flutter_session: ^0.1.1
+
+  # Dynamic Theme Switching (https://github.com/Norbert515/dynamic_theme)
+  easy_dynamic_theme: ^1.0.0
 
 dev_dependencies:
   flutter_test:
