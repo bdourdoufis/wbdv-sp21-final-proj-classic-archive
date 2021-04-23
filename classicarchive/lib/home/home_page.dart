@@ -90,14 +90,16 @@ class _HomePageState extends State<HomePage> {
                   builder: (context) {
                     return LoginDialog();
                   }).then((value) async {
-                dynamic userResult =
-                    await FlutterSession().get("loggedInUserUsername");
-                setState(() {
-                  userLoggedIn = value;
-                  if (value == true) {
-                    loggedInUsername = cast<String>(userResult);
-                  }
-                });
+                if (value == true) {
+                  dynamic userResult =
+                      await FlutterSession().get("loggedInUserUsername");
+                  setState(() {
+                    userLoggedIn = value;
+                    if (value == true) {
+                      loggedInUsername = cast<String>(userResult);
+                    }
+                  });
+                }
               });
             },
             child: Text(

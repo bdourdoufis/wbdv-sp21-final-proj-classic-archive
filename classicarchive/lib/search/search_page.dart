@@ -29,7 +29,7 @@ class SearchPageState extends State<SearchPage> {
   AppBar _buildLoadingAppBar(BuildContext context) {
     return new AppBar(
       leading: InkWell(
-          child: Icon(Icons.home),
+          child: Icon(Icons.home_outlined),
           onTap: () => Navigator.push(
               context, MaterialPageRoute(builder: (context) => HomePage()))),
       title: new Text("Classic Archive Item Search",
@@ -59,19 +59,21 @@ class SearchPageState extends State<SearchPage> {
                   builder: (context) {
                     return LoginDialog();
                   }).then((value) async {
-                dynamic userResult =
-                    await FlutterSession().get("loggedInUserUsername");
-                setState(() {
-                  userLoggedIn = value;
-                  if (value == true) {
-                    loggedInUsername = cast<String>(userResult);
-                  }
-                  searchBar = SearchBar(
-                      inBar: true,
-                      setState: setState,
-                      onSubmitted: _searchItems,
-                      buildDefaultAppBar: _buildLoggedInAppBar);
-                });
+                if (value == true) {
+                  dynamic userResult =
+                      await FlutterSession().get("loggedInUserUsername");
+                  setState(() {
+                    userLoggedIn = value;
+                    if (value == true) {
+                      loggedInUsername = cast<String>(userResult);
+                    }
+                    searchBar = SearchBar(
+                        inBar: true,
+                        setState: setState,
+                        onSubmitted: _searchItems,
+                        buildDefaultAppBar: _buildLoggedInAppBar);
+                  });
+                }
               });
             },
             child: Text(

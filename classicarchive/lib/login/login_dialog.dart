@@ -121,7 +121,7 @@ class _LoginDialogState extends State<LoginDialog> {
                   duration: Duration(seconds: 1),
                   child: InkWell(
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pop(context, false);
                         showDialog(
                             context: context,
                             barrierDismissible: false,
