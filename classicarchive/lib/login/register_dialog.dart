@@ -19,9 +19,35 @@ class _RegisterDialogState extends State<RegisterDialog> {
   @override
   void initState() {
     userBloc.userResult.listen((user) async {
-      await FlutterSession().set("loggedIn", true);
-      await FlutterSession().set("loggedInUser", true);
-      Navigator.pop(context, user);
+      if (user.userId == null) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Error"),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text('Unable to register with the given information.'),
+                      Text('The provided username is already in use.'),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      } else {
+        await FlutterSession().set("loggedIn", true);
+        await FlutterSession().set("loggedInUser", true);
+        Navigator.pop(context, user);
+      }
     });
 
     Future.delayed(Duration(milliseconds: 600), () {
@@ -29,6 +55,16 @@ class _RegisterDialogState extends State<RegisterDialog> {
         formOpacity = 1.0;
       });
     });
+  }
+
+  bool _validateInput() {
+    if (usernameFieldController.text == "" ||
+        passwordFieldController.text == "" ||
+        faction == null ||
+        favClass == null) {
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -196,8 +232,36 @@ class _RegisterDialogState extends State<RegisterDialog> {
                         borderRadius: BorderRadius.circular(20)),
                     child: TextButton(
                       onPressed: () {
-                        userBloc.registerUser(usernameFieldController.text,
-                            passwordFieldController.text, faction, favClass);
+                        if (_validateInput()) {
+                          userBloc.registerUser(usernameFieldController.text,
+                              passwordFieldController.text, faction, favClass);
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Error"),
+                                  content: SingleChildScrollView(
+                                    child: ListBody(
+                                      children: <Widget>[
+                                        Text(
+                                            'Unable to register with the given information.'),
+                                        Text(
+                                            'Please make sure all fields are filled out.'),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        }
                       },
                       child: Text(
                         'Register',

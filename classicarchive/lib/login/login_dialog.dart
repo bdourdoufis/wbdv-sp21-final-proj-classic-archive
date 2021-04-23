@@ -16,16 +16,42 @@ class _LoginDialogState extends State<LoginDialog> {
   @override
   void initState() {
     userBloc.userResult.listen((user) async {
-      await FlutterSession().set("loggedIn", true);
-      await FlutterSession().set("loggedInUser", user);
-      ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
-      while ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
-          (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||
-          (currentTheme == ThemeMode.system && user.faction == "Alliance")) {
-        EasyDynamicTheme.of(context).changeTheme();
-        currentTheme = EasyDynamicTheme.of(context).themeMode;
+      if (user.userId == null) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Error"),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text('Login failed.'),
+                      Text('Please make sure your credentials are correct.'),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      } else {
+        await FlutterSession().set("loggedIn", true);
+        await FlutterSession().set("loggedInUser", user);
+        ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
+        while ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
+            (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||
+            (currentTheme == ThemeMode.system && user.faction == "Alliance")) {
+          EasyDynamicTheme.of(context).changeTheme();
+          currentTheme = EasyDynamicTheme.of(context).themeMode;
+        }
+        Navigator.pop(context, true);
       }
-      Navigator.pop(context, true);
     });
 
     Future.delayed(Duration(milliseconds: 600), () {
@@ -103,8 +129,36 @@ class _LoginDialogState extends State<LoginDialog> {
                         borderRadius: BorderRadius.circular(20)),
                     child: TextButton(
                       onPressed: () {
-                        userBloc.login(usernameFieldController.text,
-                            passwordFieldController.text);
+                        if (usernameFieldController.text != "" &&
+                            passwordFieldController.text != "") {
+                          userBloc.login(usernameFieldController.text,
+                              passwordFieldController.text);
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Error"),
+                                  content: SingleChildScrollView(
+                                    child: ListBody(
+                                      children: <Widget>[
+                                        Text('Login failed.'),
+                                        Text(
+                                            'Please make sure all fields are filled out.'),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        }
                       },
                       child: Text(
                         'Login',

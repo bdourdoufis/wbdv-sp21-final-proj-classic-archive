@@ -18,6 +18,8 @@ class UserApiClient {
 
     if (response.statusCode != 200) {
       throw Exception("Error while logging in.");
+    } else if (response.body == "0") {
+      return User();
     }
 
     final json = jsonDecode(response.body);
@@ -36,7 +38,9 @@ class UserApiClient {
     });
 
     if (response.statusCode != 200) {
-      throw Exception("Error while retrieving item details");
+      throw Exception("Error while registering user.");
+    } else if (response.body == "0") {
+      return User();
     }
 
     final json = jsonDecode(response.body);
@@ -55,7 +59,7 @@ class UserApiClient {
     });
 
     if (response.statusCode != 200) {
-      throw Exception("Error while retrieving item details");
+      throw Exception("Error while updating user.");
     }
 
     final json = jsonDecode(response.body);
