@@ -15,4 +15,8 @@ class UserRepository {
       String favoriteClass) async {
     return await client.register(username, password, faction, favoriteClass);
   }
+
+  Future<User> update(User user) async {
+    return await client.update(user);
+  }
 }

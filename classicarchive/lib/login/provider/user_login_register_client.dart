@@ -43,4 +43,23 @@ class UserApiClient {
     //TODO: Set up session here? Or maybe after the call returns?
     return User.fromJson(json);
   }
+
+  Future<User> update(User user) async {
+    final url = Uri.parse('$_baseUserApiUrl/update');
+    final response = await this.httpClient.put(url, body: {
+      '_id': user.userId,
+      'username': user.username,
+      'password': user.password,
+      'faction': user.faction,
+      'favoriteClass': user.favoriteClass
+    });
+
+    if (response.statusCode != 200) {
+      throw Exception("Error while retrieving item details");
+    }
+
+    final json = jsonDecode(response.body);
+    //TODO: Set up session here? Or maybe after the call returns?
+    return User.fromJson(json);
+  }
 }

@@ -1,5 +1,4 @@
 import 'package:classicarchive/login/bloc/user_bloc.dart';
-import 'package:classicarchive/login/register_dialog.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
@@ -19,10 +18,7 @@ class _LoginDialogState extends State<LoginDialog> {
     userBloc.userResult.listen((user) async {
       print("User " + user.username + " successfully logged in!");
       await FlutterSession().set("loggedIn", true);
-      await FlutterSession().set("loggedInUserUsername", user.username);
-      await FlutterSession().set("loggedInUserPassword", user.password);
-      await FlutterSession().set("loggedInUserFaction", user.faction);
-      await FlutterSession().set("loggedInUserClass", user.favoriteClass);
+      await FlutterSession().set("loggedInUser", user);
       ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
       if ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
           (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||

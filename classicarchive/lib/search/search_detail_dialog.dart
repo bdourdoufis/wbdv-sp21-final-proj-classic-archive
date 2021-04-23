@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:classicarchive/login/login_dialog.dart';
+import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/search/bloc/search_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
@@ -21,6 +22,7 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
   bool favorited;
   bool userLoggedIn;
   String loggedInUsername;
+  User loggedInUser;
 
   @override
   void initState() {
@@ -41,11 +43,13 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
 
   void getUserInfo() async {
     dynamic loggedInResult = await FlutterSession().get("loggedIn");
-    dynamic userResult = await FlutterSession().get("loggedInUserUsername");
+    dynamic userData = await FlutterSession().get("loggedInUser");
     if (cast<bool>(loggedInResult) != null) {
       userLoggedIn = cast<bool>(loggedInResult);
     }
-    loggedInUsername = cast<String>(userResult);
+    if (userData != null) {
+      loggedInUser = User.fromJson(userData);
+    }
   }
 
   T cast<T>(x) => x is T ? x : null;

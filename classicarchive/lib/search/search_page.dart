@@ -1,8 +1,11 @@
 import 'package:classicarchive/home/home_page.dart';
 import 'package:classicarchive/login/login_dialog.dart';
+import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/register_dialog.dart';
+import 'package:classicarchive/profile/profile_dialog.dart';
 import 'package:classicarchive/search/bloc/search_bloc.dart';
 import 'package:classicarchive/search/search_detail_dialog.dart';
+import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
 import 'package:flutter_session/flutter_session.dart';
@@ -25,6 +28,7 @@ class SearchPageState extends State<SearchPage> {
   String placeholderText;
   bool userLoggedIn = false;
   String loggedInUsername;
+  User loggedInUser;
 
   AppBar _buildLoadingAppBar(BuildContext context) {
     return new AppBar(
@@ -60,19 +64,8 @@ class SearchPageState extends State<SearchPage> {
                     return LoginDialog();
                   }).then((value) async {
                 if (value == true) {
-                  dynamic userResult =
-                      await FlutterSession().get("loggedInUserUsername");
-                  setState(() {
-                    userLoggedIn = value;
-                    if (value == true) {
-                      loggedInUsername = cast<String>(userResult);
-                    }
-                    searchBar = SearchBar(
-                        inBar: true,
-                        setState: setState,
-                        onSubmitted: _searchItems,
-                        buildDefaultAppBar: _buildLoggedInAppBar);
-                  });
+                  getUserInfo();
+                  setState(() {});
                 }
               });
             },
@@ -114,12 +107,7 @@ class SearchPageState extends State<SearchPage> {
         ),
         TextButton(
             onPressed: () {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return LoginDialog();
-                  });
+              _openProfileDialog();
             },
             child: Text(
               loggedInUsername,
@@ -131,7 +119,7 @@ class SearchPageState extends State<SearchPage> {
         TextButton(
             onPressed: () async {
               await FlutterSession().set("loggedIn", false);
-              await FlutterSession().set("loggedInUserUsername", "");
+              await FlutterSession().set("loggedInUser", User());
               setState(() {
                 userLoggedIn = false;
                 searchBar = SearchBar(
@@ -187,7 +175,7 @@ class SearchPageState extends State<SearchPage> {
 
   void getUserInfo() async {
     dynamic loggedInResult = await FlutterSession().get("loggedIn");
-    dynamic userResult = await FlutterSession().get("loggedInUserUsername");
+    dynamic userData = await FlutterSession().get("loggedInUser");
     if (cast<bool>(loggedInResult) != null) {
       userLoggedIn = cast<bool>(loggedInResult);
       if (userLoggedIn == true) {
@@ -196,6 +184,8 @@ class SearchPageState extends State<SearchPage> {
             setState: setState,
             onSubmitted: _searchItems,
             buildDefaultAppBar: _buildLoggedInAppBar);
+        loggedInUser = User.fromJson(userData);
+        loggedInUsername = loggedInUser.username;
       } else {
         searchBar = SearchBar(
             inBar: true,
@@ -210,7 +200,6 @@ class SearchPageState extends State<SearchPage> {
           onSubmitted: _searchItems,
           buildDefaultAppBar: _buildLoggedOutAppBar);
     }
-    loggedInUsername = cast<String>(userResult);
   }
 
   T cast<T>(x) => x is T ? x : null;
@@ -218,6 +207,29 @@ class SearchPageState extends State<SearchPage> {
   void loginCallback() {
     getUserInfo();
     setState(() {});
+  }
+
+  void _openProfileDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return ProfileDialog(user: loggedInUser);
+        }).then((user) async {
+      if (user.userId != null) {
+        await FlutterSession().set("loggedInUser", user);
+        ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
+        if ((currentTheme == ThemeMode.light && user.faction == "Horde") ||
+            (currentTheme == ThemeMode.dark && user.faction == "Alliance") ||
+            (currentTheme == ThemeMode.system && user.faction == "Alliance")) {
+          EasyDynamicTheme.of(context).changeTheme();
+        }
+        setState(() {
+          loggedInUser = user;
+        });
+        _openProfileDialog();
+      }
+    });
   }
 
   @override

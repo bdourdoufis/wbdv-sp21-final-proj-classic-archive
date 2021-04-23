@@ -2,8 +2,6 @@ import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
-import 'login_dialog.dart';
-
 class RegisterDialog extends StatefulWidget {
   @override
   _RegisterDialogState createState() => _RegisterDialogState();
@@ -13,7 +11,6 @@ class _RegisterDialogState extends State<RegisterDialog> {
   double formOpacity = 0.0;
   String faction;
   String favClass;
-  List<DropdownMenuItem> factionDropdownItems;
   final usernameFieldController = TextEditingController();
   final passwordFieldController = TextEditingController();
 
@@ -29,11 +26,6 @@ class _RegisterDialogState extends State<RegisterDialog> {
         formOpacity = 1.0;
       });
     });
-
-    factionDropdownItems = [
-      DropdownMenuItem(child: Text("Alliance"), value: "Alliance"),
-      DropdownMenuItem(child: Text("Horde"), value: "Horde"),
-    ];
   }
 
   @override
