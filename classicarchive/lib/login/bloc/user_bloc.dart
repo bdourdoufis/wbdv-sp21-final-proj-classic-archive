@@ -2,6 +2,7 @@ import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/provider/user_login_register_repository.dart';
 import 'package:classicarchive/search/models/item_models.dart';
 import 'package:classicarchive/search/provider/item_api_search_repository.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserBloc {
@@ -32,6 +33,10 @@ class UserBloc {
     User registeredUser =
         await repository.register(username, password, faction, favClass);
     _userFetcher.add(registeredUser);
+  }
+
+  updateUser(User user) async {
+    await repository.update(user);
   }
 
   getUserFavorites(User user) async {
