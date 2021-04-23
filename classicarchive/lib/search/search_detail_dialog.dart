@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:classicarchive/login/login_dialog.dart';
 import 'package:classicarchive/search/bloc/search_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 
 import 'models/item_models.dart';
 
@@ -17,12 +18,14 @@ class ResultDetailDialog extends StatefulWidget {
 class ResultDetailDialogState extends State<ResultDetailDialog> {
   ItemDetail detail;
   StreamSubscription<ItemDetail> subscription;
-  // TODO: get this from the user session
   bool favorited;
+  bool userLoggedIn;
+  String loggedInUsername;
 
   @override
   void initState() {
     super.initState();
+    getUserInfo();
     subscription = searchBloc.itemDetail.listen((itemDetail) {
       setState(() {
         detail = itemDetail;
@@ -35,6 +38,17 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
 
     favorited = false;
   }
+
+  void getUserInfo() async {
+    dynamic loggedInResult = await FlutterSession().get("loggedIn");
+    dynamic userResult = await FlutterSession().get("loggedInUserUsername");
+    if (cast<bool>(loggedInResult) != null) {
+      userLoggedIn = cast<bool>(loggedInResult);
+    }
+    loggedInUsername = cast<String>(userResult);
+  }
+
+  T cast<T>(x) => x is T ? x : null;
 
   List<Text> _getLabelText() {
     List<Text> labels = [];
@@ -64,12 +78,25 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                             favorited = !favorited;
                             //TODO: Set favorite in database
                             //IF not logged in:
-                            showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (context) {
-                                  return LoginDialog();
-                                });
+                            userLoggedIn == false
+                                ? showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) {
+                                      return LoginDialog();
+                                    }).then((value) async {
+                                    dynamic userResult = await FlutterSession()
+                                        .get("loggedInUserUsername");
+                                    setState(() {
+                                      userLoggedIn = value;
+                                      if (value == true) {
+                                        loggedInUsername =
+                                            cast<String>(userResult);
+                                      }
+                                      Navigator.pop(context, true);
+                                    });
+                                  })
+                                : () => {}; //TODO: Add to user favorites
                           });
                         },
                         icon: favorited
@@ -85,7 +112,7 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                       customBorder: CircleBorder(),
                       onTap: () {
                         subscription.cancel();
-                        Navigator.pop(context);
+                        Navigator.pop(context, false);
                       },
                       child: Icon(Icons.close_rounded,
                           color: Colors.black, size: 40.0),

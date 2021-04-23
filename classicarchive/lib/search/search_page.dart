@@ -99,7 +99,6 @@ class SearchPageState extends State<SearchPage> {
   AppBar _buildLoggedInAppBar(BuildContext context) {
     return AppBar(
       leading: InkWell(
-        //TODO: Make this the alliance symbol in alliance theme, horde symbol in horde theme
         child: Icon(Icons.home_outlined),
         onTap: () => Navigator.push(
             context, MaterialPageRoute(builder: (context) => HomePage())),
@@ -165,7 +164,7 @@ class SearchPageState extends State<SearchPage> {
           currentlySearching = false;
           resultSet.clear();
           result.forEach((item) {
-            resultSet.add(ItemResult(item: item));
+            resultSet.add(ItemResult(item: item, loginCallback: loginCallback));
           });
         }
       });
@@ -208,6 +207,11 @@ class SearchPageState extends State<SearchPage> {
 
   T cast<T>(x) => x is T ? x : null;
 
+  void loginCallback() {
+    getUserInfo();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -227,8 +231,9 @@ class SearchPageState extends State<SearchPage> {
 
 class ItemResult extends StatelessWidget {
   final Item item;
+  final Function loginCallback;
 
-  ItemResult({@required this.item});
+  ItemResult({@required this.item, this.loginCallback});
 
   void _showResultDialog(BuildContext context) {
     showDialog(
@@ -236,7 +241,12 @@ class ItemResult extends StatelessWidget {
         barrierDismissible: false,
         builder: (context) {
           return ResultDetailDialog(itemResult: item);
-        });
+        }).then((value) {
+      if (value == true) {
+        loginCallback();
+        _showResultDialog(context);
+      }
+    });
   }
 
   @override
