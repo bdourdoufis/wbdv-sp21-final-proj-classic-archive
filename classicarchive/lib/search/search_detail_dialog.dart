@@ -75,29 +75,29 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                     child: IconButton(
                         onPressed: () {
                           setState(() {
-                            favorited = !favorited;
-                            //TODO: Set favorite in database
-                            //IF not logged in:
-                            userLoggedIn == false
-                                ? showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) {
-                                      return LoginDialog();
-                                    }).then((value) async {
-                                    if (value == true) {
-                                      dynamic userResult =
-                                          await FlutterSession()
-                                              .get("loggedInUserUsername");
-                                      setState(() {
-                                        userLoggedIn = value;
-                                        loggedInUsername =
-                                            cast<String>(userResult);
-                                        Navigator.pop(context, true);
-                                      });
-                                    }
-                                  })
-                                : () => {}; //TODO: Add to user favorites
+                            if (userLoggedIn == false) {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) {
+                                    return LoginDialog();
+                                  }).then((value) async {
+                                if (value == true) {
+                                  dynamic userResult = await FlutterSession()
+                                      .get("loggedInUserUsername");
+                                  setState(() {
+                                    userLoggedIn = value;
+                                    loggedInUsername = cast<String>(userResult);
+                                    Navigator.pop(context, true);
+                                  });
+                                }
+                              });
+                            } else {
+                              setState(() {
+                                favorited = !favorited;
+                              });
+                              //TODO: Add to user favorites
+                            }
                           });
                         },
                         icon: favorited

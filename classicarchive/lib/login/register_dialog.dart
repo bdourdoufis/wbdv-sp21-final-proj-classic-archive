@@ -209,24 +209,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
                         style: TextStyle(color: Colors.white, fontSize: 25),
                       ),
                     ),
-                  )),
-              AnimatedOpacity(
-                  opacity: formOpacity,
-                  duration: Duration(seconds: 1),
-                  child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) {
-                              return LoginDialog();
-                            });
-                      },
-                      child: Text(
-                        "Login",
-                        style: TextStyle(color: Colors.blue, fontSize: 18),
-                      )))
+                  ))
             ],
           )),
     );
