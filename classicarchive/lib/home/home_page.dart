@@ -95,9 +95,7 @@ class _HomePageState extends State<HomePage> {
                       await FlutterSession().get("loggedInUserUsername");
                   setState(() {
                     userLoggedIn = value;
-                    if (value == true) {
-                      loggedInUsername = cast<String>(userResult);
-                    }
+                    loggedInUsername = cast<String>(userResult);
                   });
                 }
               });

@@ -85,16 +85,17 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                                     builder: (context) {
                                       return LoginDialog();
                                     }).then((value) async {
-                                    dynamic userResult = await FlutterSession()
-                                        .get("loggedInUserUsername");
-                                    setState(() {
-                                      userLoggedIn = value;
-                                      if (value == true) {
+                                    if (value == true) {
+                                      dynamic userResult =
+                                          await FlutterSession()
+                                              .get("loggedInUserUsername");
+                                      setState(() {
+                                        userLoggedIn = value;
                                         loggedInUsername =
                                             cast<String>(userResult);
-                                      }
-                                      Navigator.pop(context, true);
-                                    });
+                                        Navigator.pop(context, true);
+                                      });
+                                    }
                                   })
                                 : () => {}; //TODO: Add to user favorites
                           });

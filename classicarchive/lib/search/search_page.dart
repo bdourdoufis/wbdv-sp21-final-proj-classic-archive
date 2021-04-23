@@ -203,6 +203,12 @@ class SearchPageState extends State<SearchPage> {
             onSubmitted: _searchItems,
             buildDefaultAppBar: _buildLoggedOutAppBar);
       }
+    } else {
+      searchBar = SearchBar(
+          inBar: true,
+          setState: setState,
+          onSubmitted: _searchItems,
+          buildDefaultAppBar: _buildLoggedOutAppBar);
     }
     loggedInUsername = cast<String>(userResult);
   }
