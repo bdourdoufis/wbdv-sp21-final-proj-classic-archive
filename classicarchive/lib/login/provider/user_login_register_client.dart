@@ -66,6 +66,18 @@ class UserApiClient {
     return User.fromJson(json);
   }
 
+  Future<User> profile(String username) async {
+    final url = Uri.parse('$_baseUserApiUrl/' + username);
+    final response = await this.httpClient.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception("Error while retrieving user profile.");
+    }
+
+    final json = jsonDecode(response.body);
+    return User.fromJson(json[0]);
+  }
+
   Future<Favorite> addFavorite(User user, int itemId, String itemName) async {
     final url = Uri.parse('$_baseFavoriteApiUrl/create');
     final response = await this.httpClient.post(url, body: {

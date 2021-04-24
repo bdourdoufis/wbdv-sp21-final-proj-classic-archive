@@ -1,3 +1,4 @@
+import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/profile/profile_dialog.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
@@ -37,23 +38,111 @@ class _UsersFavoritedListState extends State<UsersFavoritedList> {
             borderRadius: BorderRadius.circular(12)),
         child: SingleChildScrollView(
           child: Column(
-            children: [...userResults],
+            children: [Container(), ...userResults],
           ),
         ));
   }
 }
 
-class UserResult extends StatelessWidget {
+class UserResult extends StatefulWidget {
   final User user;
 
   UserResult({@required this.user});
+
+  _UserResultState createState() => _UserResultState();
+}
+
+class _UserResultState extends State<UserResult> {
+  User fullUser;
+  bool loadingFull;
+  AssetImage profileImage;
+
+  @override
+  void initState() {
+    super.initState();
+    loadingFull = true;
+    userBloc.getProfileInformation(widget.user.username);
+    userBloc.userProfile.listen((user) {
+      if (user.username == widget.user.username) {
+        setState(() {
+          loadingFull = false;
+          fullUser = user;
+          setClassImage();
+        });
+      }
+    });
+  }
+
+  void setClassImage() {
+    switch (fullUser.favoriteClass) {
+      case "Warrior":
+        {
+          profileImage = AssetImage("assets/images/warrior.png");
+        }
+        break;
+
+      case "Paladin":
+        {
+          profileImage = AssetImage("assets/images/paladin.png");
+        }
+        break;
+
+      case "Druid":
+        {
+          profileImage = AssetImage("assets/images/druid.png");
+        }
+        break;
+
+      case "Hunter":
+        {
+          profileImage = AssetImage("assets/images/hunter.png");
+        }
+        break;
+
+      case "Mage":
+        {
+          profileImage = AssetImage("assets/images/mage.png");
+        }
+        break;
+
+      case "Priest":
+        {
+          profileImage = AssetImage("assets/images/priest.png");
+        }
+        break;
+
+      case "Rogue":
+        {
+          profileImage = AssetImage("assets/images/rogue.png");
+        }
+        break;
+
+      case "Shaman":
+        {
+          profileImage = AssetImage("assets/images/shaman.png");
+        }
+        break;
+
+      case "Warlock":
+        {
+          profileImage = AssetImage("assets/images/warlock.png");
+        }
+        break;
+
+      default:
+        {
+          profileImage = AssetImage("assets/images/warrior.png");
+        }
+        break;
+    }
+  }
 
   void _showProfileDialog(BuildContext context) {
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) {
-          return ProfileDialog(user: user);
+          return ProfileDialog(user: fullUser);
         }).then((value) {
       if (value == true) {
         _showProfileDialog(context);
@@ -66,18 +155,37 @@ class UserResult extends StatelessWidget {
     return Container(
       height: 50,
       child: Card(
+          color: fullUser == null
+              ? null
+              : fullUser.faction == "Horde"
+                  ? Color(0xFF880808)
+                  : Color(0xFF0022EE),
           child: InkWell(
               onTap: () {
-                _showProfileDialog(context);
+                if (fullUser != null) {
+                  _showProfileDialog(context);
+                }
               },
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: Row(
                   children: [
+                    profileImage == null
+                        ? CircularProgressIndicator()
+                        : Padding(
+                            padding: EdgeInsets.fromLTRB(0, 5, 5, 5),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: profileImage, fit: BoxFit.cover)),
+                            ),
+                          ),
                     Padding(
                         padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: Text(
-                          user.username,
+                          widget.user.username,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16.0),
                         ))

@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart';
 class UserBloc {
   UserRepository repository = UserRepository();
 
-  // Fetches a user given their credentials.
+  // Fetches a user given their login credentials.
   final _userFetcher = PublishSubject<User>();
 
   // Fetches a list of items favorited by a given user.
@@ -15,11 +15,18 @@ class UserBloc {
   // Fetches a list of users who have favorited a given item.
   final _itemFavoritedFetcher = PublishSubject<List<User>>();
 
+  // Fetches a user's profile data given their username.
+  // We need a user stream separate from _userFetcher since other background
+  // widgets may be listening to it for login information.
+  final _userProfileFetcher = PublishSubject<User>();
+
   Stream<User> get userResult => _userFetcher.stream;
 
   Stream<List<Item>> get userFavorites => _userFavoritesFetcher.stream;
 
   Stream<List<User>> get favoritedByUsers => _itemFavoritedFetcher.stream;
+
+  Stream<User> get userProfile => _userProfileFetcher.stream;
 
   void login(String username, String password) async {
     User loggedInUser = await repository.login(username, password);
@@ -35,6 +42,12 @@ class UserBloc {
 
   void updateUser(User user) async {
     await repository.update(user);
+  }
+
+  void getProfileInformation(String username) async {
+    await repository.profile(username).then((user) {
+      _userProfileFetcher.add(user);
+    });
   }
 
   void addFavorite(User user, int itemId, String itemName) async {
@@ -58,8 +71,10 @@ class UserBloc {
   }
 
   void dispose() {
+    _userFetcher.close();
     _userFavoritesFetcher.close();
     _itemFavoritedFetcher.close();
+    _userProfileFetcher.close();
   }
 }
 

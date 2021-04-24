@@ -32,6 +32,7 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
   @override
   void initState() {
     super.initState();
+    userLoggedIn = false;
     userBloc.getItemFavorites(widget.itemResult.itemId);
     getUserInfo();
     subscription = searchBloc.itemDetail.listen((itemDetail) {
@@ -125,9 +126,11 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                                   if (favorited) {
                                     userBloc.addFavorite(loggedInUser,
                                         detail.itemId, detail.name);
+                                    usersFavorited.add(loggedInUser);
                                   } else {
                                     userBloc.removeFavorite(
                                         loggedInUser, detail.itemId);
+                                    usersFavorited.remove(loggedInUser);
                                   }
                                 }
                               });
@@ -212,9 +215,19 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                                     ]),
                                   ),
                             SizedBox(height: 25),
-                            Center(
-                              child: Text("Users Have Favorited This Item:"),
-                            ),
+                            usersFavorited.length > 0
+                                ? Center(
+                                    child: Text(
+                                        "Users Have Favorited This Item:",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold)))
+                                : Center(
+                                    child: Text(
+                                        "No Users Have Favorited This Item.",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold))),
                             usersFavorited.length == 0
                                 ? Container()
                                 : Padding(

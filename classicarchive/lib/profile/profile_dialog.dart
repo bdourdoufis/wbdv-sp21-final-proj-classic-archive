@@ -209,11 +209,13 @@ class _ProfileDialogState extends State<ProfileDialog> {
                         DropdownButton(
                             value: widget.user.faction,
                             hint: Text("Select your faction..."),
-                            onChanged: (value) {
-                              setState(() {
-                                widget.user.faction = value;
-                              });
-                            },
+                            onChanged: editable
+                                ? (value) {
+                                    setState(() {
+                                      widget.user.faction = value;
+                                    });
+                                  }
+                                : null,
                             items: [
                               DropdownMenuItem(
                                   child: Text("Alliance",
@@ -232,12 +234,14 @@ class _ProfileDialogState extends State<ProfileDialog> {
                         DropdownButton(
                             value: widget.user.favoriteClass,
                             hint: Text("Select your favorite class..."),
-                            onChanged: (value) {
-                              setState(() {
-                                widget.user.favoriteClass = value;
-                                setClassImage();
-                              });
-                            },
+                            onChanged: editable
+                                ? (value) {
+                                    setState(() {
+                                      widget.user.favoriteClass = value;
+                                      setClassImage();
+                                    });
+                                  }
+                                : null,
                             items: [
                               DropdownMenuItem(
                                   child: Text("Warrior",
