@@ -2,6 +2,7 @@ import 'package:classicarchive/login/login_dialog.dart';
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/register_dialog.dart';
 import 'package:classicarchive/profile/profile_dialog.dart';
+import 'package:classicarchive/racials/horde_racials.dart';
 import 'package:classicarchive/search/search_page.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,8 +21,6 @@ class _HomePageState extends State<HomePage> {
   bool userLoggedIn = false;
 
   User loggedInUser;
-
-  SnackBar emptySearchSnackBar;
 
   final controller = TextEditingController();
 
@@ -69,9 +68,6 @@ class _HomePageState extends State<HomePage> {
         onTap: () {},
       ),
       actions: [
-        //Only want to display these actions if not logged in
-        //If logged in, instead have a textbutton containing the username
-        //which routes to the profile page
         TextButton(
             onPressed: () {
               showDialog(
@@ -135,9 +131,38 @@ class _HomePageState extends State<HomePage> {
         onTap: () {},
       ),
       actions: [
-        //Only want to display these actions if not logged in
-        //If logged in, instead have a textbutton containing the username
-        //which routes to the profile page
+        loggedInUser.faction == "Horde"
+            ? TextButton(
+                onPressed: () {
+                  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HordeRacialsPage()))
+                      .then((value) {
+                    getUserInfo();
+                  });
+                },
+                child: Text(
+                  "View Horde Racials",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+              )
+            : TextButton(
+                onPressed: () {
+                  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HordeRacialsPage()))
+                      .then((value) {
+                    getUserInfo();
+                  });
+                },
+                child: Text(
+                  "View Alliance Racials",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+              ),
+        SizedBox(width: 50),
         TextButton(
             onPressed: () {
               _openProfileDialog();
@@ -168,9 +193,12 @@ class _HomePageState extends State<HomePage> {
     controller.text = "";
     if (searchVal.length > 0) {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => SearchPage(searchValue: searchVal)));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SearchPage(searchValue: searchVal)))
+          .then((value) {
+        getUserInfo();
+      });
     } else {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => SearchPage()));
