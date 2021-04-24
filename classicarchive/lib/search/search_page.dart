@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:classicarchive/home/home_page.dart';
 import 'package:classicarchive/login/login_dialog.dart';
 import 'package:classicarchive/login/models/user.dart';
@@ -28,13 +30,16 @@ class SearchPageState extends State<SearchPage> {
   String placeholderText;
   bool userLoggedIn = false;
   User loggedInUser;
+  StreamSubscription<List<Item>> searchSubscription;
 
   AppBar _buildLoadingAppBar(BuildContext context) {
     return new AppBar(
       leading: InkWell(
           child: Icon(Icons.home_outlined),
-          onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HomePage()))),
+          onTap: () {
+            searchSubscription.cancel();
+            Navigator.pop(context);
+          }),
       title: new Text("Classic Archive Item Search",
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
       actions: [searchBar.getSearchAction(context)],
@@ -45,8 +50,10 @@ class SearchPageState extends State<SearchPage> {
     return new AppBar(
       leading: InkWell(
           child: Icon(Icons.home_outlined),
-          onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HomePage()))),
+          onTap: () {
+            searchSubscription.cancel();
+            Navigator.pop(context);
+          }),
       title: new Text("Classic Archive Item Search",
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
       actions: [
@@ -121,10 +128,11 @@ class SearchPageState extends State<SearchPage> {
   AppBar _buildLoggedInAppBar(BuildContext context) {
     return AppBar(
       leading: InkWell(
-        child: Icon(Icons.home_outlined),
-        onTap: () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomePage())),
-      ),
+          child: Icon(Icons.home_outlined),
+          onTap: () {
+            searchSubscription.cancel();
+            Navigator.pop(context);
+          }),
       title: new Text("Classic Archive Item Search",
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
       actions: [
@@ -173,7 +181,7 @@ class SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     getUserInfo();
-    searchBloc.itemResult.listen((result) {
+    searchSubscription = searchBloc.itemResult.listen((result) {
       setState(() {
         if (result.isEmpty) {
           placeholderText = "No results found. Try again.";
@@ -181,7 +189,10 @@ class SearchPageState extends State<SearchPage> {
           currentlySearching = false;
           resultSet.clear();
           result.forEach((item) {
-            resultSet.add(ItemResult(item: item, loginCallback: loginCallback));
+            resultSet.add(ItemResult(
+                item: item,
+                loginCallback: loginCallback,
+                parentSubscription: searchSubscription));
           });
         }
       });
@@ -281,8 +292,10 @@ class SearchPageState extends State<SearchPage> {
 class ItemResult extends StatelessWidget {
   final Item item;
   final Function loginCallback;
+  final StreamSubscription<List<Item>> parentSubscription;
 
-  ItemResult({@required this.item, this.loginCallback});
+  ItemResult(
+      {@required this.item, this.loginCallback, this.parentSubscription});
 
   void _showResultDialog(BuildContext context) {
     showDialog(

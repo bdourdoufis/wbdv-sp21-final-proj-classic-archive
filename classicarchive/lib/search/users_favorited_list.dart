@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/profile/profile_dialog.dart';
@@ -25,6 +27,12 @@ class _UsersFavoritedListState extends State<UsersFavoritedList> {
     });
   }
 
+  void closeSubscriptions() {
+    userResults.forEach((element) {
+      element.closeSubscriptions();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,7 +46,7 @@ class _UsersFavoritedListState extends State<UsersFavoritedList> {
             borderRadius: BorderRadius.circular(12)),
         child: SingleChildScrollView(
           child: Column(
-            children: [Container(), ...userResults],
+            children: [...userResults],
           ),
         ));
   }
@@ -46,23 +54,29 @@ class _UsersFavoritedListState extends State<UsersFavoritedList> {
 
 class UserResult extends StatefulWidget {
   final User user;
+  final _UserResultState state = _UserResultState();
 
   UserResult({@required this.user});
 
-  _UserResultState createState() => _UserResultState();
+  _UserResultState createState() => state;
+
+  void closeSubscriptions() {
+    state.closeSubscriptions();
+  }
 }
 
 class _UserResultState extends State<UserResult> {
   User fullUser;
   bool loadingFull;
   AssetImage profileImage;
+  StreamSubscription<User> userSubscription;
 
   @override
   void initState() {
     super.initState();
     loadingFull = true;
     userBloc.getProfileInformation(widget.user.username);
-    userBloc.userProfile.listen((user) {
+    userSubscription = userBloc.userProfile.listen((user) {
       if (user.username == widget.user.username) {
         setState(() {
           loadingFull = false;
@@ -71,6 +85,10 @@ class _UserResultState extends State<UserResult> {
         });
       }
     });
+  }
+
+  void closeSubscriptions() {
+    userSubscription.cancel();
   }
 
   void setClassImage() {

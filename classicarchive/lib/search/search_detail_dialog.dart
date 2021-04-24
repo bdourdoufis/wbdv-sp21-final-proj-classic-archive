@@ -115,6 +115,9 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                                   setState(() {
                                     userLoggedIn = value;
                                     loggedInUsername = cast<String>(userResult);
+                                    subscription.cancel();
+                                    favoriteSubscription.cancel();
+                                    usersSubscription.cancel();
                                     Navigator.pop(context, true);
                                   });
                                 }
@@ -218,13 +221,13 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                             usersFavorited.length > 0
                                 ? Center(
                                     child: Text(
-                                        "Users Have Favorited This Item:",
+                                        "Users have favorited this item:",
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold)))
                                 : Center(
                                     child: Text(
-                                        "No Users Have Favorited This Item.",
+                                        "No users have favorited this item.",
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold))),

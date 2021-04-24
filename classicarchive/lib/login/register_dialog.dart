@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
@@ -15,11 +17,12 @@ class _RegisterDialogState extends State<RegisterDialog> {
   String favClass;
   final usernameFieldController = TextEditingController();
   final passwordFieldController = TextEditingController();
+  StreamSubscription<User> registerSubscription;
 
   @override
   void initState() {
     super.initState();
-    userBloc.userResult.listen((user) async {
+    registerSubscription = userBloc.userResult.listen((user) async {
       if (user.userId == null) {
         showDialog(
             context: context,
@@ -47,6 +50,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
       } else {
         await FlutterSession().set("loggedIn", true);
         await FlutterSession().set("loggedInUser", true);
+        registerSubscription.cancel();
         Navigator.pop(context, user);
       }
     });
@@ -86,6 +90,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
                       splashColor: Colors.white,
                       customBorder: CircleBorder(),
                       onTap: () {
+                        registerSubscription.cancel();
                         Navigator.pop(context, User());
                       },
                       child: Icon(Icons.close_rounded,

@@ -164,11 +164,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _routeToSearch(BuildContext context) {
-    if (controller.text.length > 0) {
+    String searchVal = controller.text;
+    controller.text = "";
+    if (searchVal.length > 0) {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => SearchPage(searchValue: controller.text)));
+              builder: (context) => SearchPage(searchValue: searchVal)));
     } else {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => SearchPage()));

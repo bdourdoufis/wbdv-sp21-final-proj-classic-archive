@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
+
+import 'models/user.dart';
 
 class LoginDialog extends StatefulWidget {
   @override
@@ -12,11 +16,12 @@ class _LoginDialogState extends State<LoginDialog> {
   double formOpacity = 0.0;
   final usernameFieldController = TextEditingController();
   final passwordFieldController = TextEditingController();
+  StreamSubscription<User> loginStream;
 
   @override
   void initState() {
     super.initState();
-    userBloc.userResult.listen((user) async {
+    loginStream = userBloc.userResult.listen((user) async {
       if (user.userId == null) {
         showDialog(
             context: context,
@@ -51,6 +56,7 @@ class _LoginDialogState extends State<LoginDialog> {
           EasyDynamicTheme.of(context).changeTheme();
           currentTheme = EasyDynamicTheme.of(context).themeMode;
         }
+        loginStream.cancel();
         Navigator.pop(context, true);
       }
     });
@@ -80,6 +86,7 @@ class _LoginDialogState extends State<LoginDialog> {
                       splashColor: Colors.white,
                       customBorder: CircleBorder(),
                       onTap: () {
+                        loginStream.cancel();
                         Navigator.pop(context, false);
                       },
                       child: Icon(Icons.close_rounded,
@@ -153,6 +160,7 @@ class _LoginDialogState extends State<LoginDialog> {
                                     TextButton(
                                       child: Text('Ok'),
                                       onPressed: () {
+                                        loginStream.cancel();
                                         Navigator.of(context).pop();
                                       },
                                     ),

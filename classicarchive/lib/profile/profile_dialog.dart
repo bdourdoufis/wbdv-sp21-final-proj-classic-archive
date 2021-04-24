@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/models/user.dart';
+import 'package:classicarchive/profile/items_favorited_list.dart';
+import 'package:classicarchive/search/models/item_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
@@ -20,12 +24,24 @@ class _ProfileDialogState extends State<ProfileDialog> {
   final passwordFieldController = TextEditingController();
   User originalUser;
   User loggedInUser;
+  List<Item> userFavorites;
+  ItemsFavoritedList favoritedList;
+  StreamSubscription favoritesSubscription;
 
   @override
   void initState() {
     super.initState();
     editable = false;
+    userFavorites = [];
+    userBloc.getUserFavorites(widget.user);
     verifyUser();
+
+    favoritesSubscription = userBloc.userFavorites.listen((items) {
+      setState(() {
+        userFavorites = items;
+        favoritedList = ItemsFavoritedList(items: items);
+      });
+    });
 
     Future.delayed(Duration(milliseconds: 600), () {
       setState(() {
@@ -131,13 +147,209 @@ class _ProfileDialogState extends State<ProfileDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 20,
-      child: Container(
-          height: 800,
-          width: 800,
-          child: Column(
-            children: [
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 20,
+        child: Container(
+            height: 800,
+            width: 800,
+            child: Stack(children: [
+              Container(
+                  child: SingleChildScrollView(
+                      child: Column(
+                children: [
+                  Text("User Profile: " + widget.user.username,
+                      style:
+                          TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  AnimatedOpacity(
+                      opacity: formOpacity,
+                      duration: Duration(seconds: 1),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: profileImage, fit: BoxFit.cover)),
+                        ),
+                      )),
+                  AnimatedOpacity(
+                      opacity: formOpacity,
+                      duration: Duration(seconds: 1),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                        child: TextField(
+                          readOnly: true,
+                          controller: usernameFieldController,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Username',
+                              hintText: 'Enter your username...'),
+                        ),
+                      )),
+                  AnimatedOpacity(
+                      opacity: formOpacity,
+                      duration: Duration(seconds: 1),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                        child: TextField(
+                          readOnly: !editable,
+                          controller: passwordFieldController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Password',
+                              hintText: 'Enter your password...'),
+                        ),
+                      )),
+                  SizedBox(height: 25),
+                  AnimatedOpacity(
+                      opacity: formOpacity,
+                      duration: Duration(seconds: 1),
+                      child: Padding(
+                          padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                          child: Row(children: [
+                            DropdownButton(
+                                value: widget.user.faction,
+                                hint: Text("Select your faction..."),
+                                onChanged: editable
+                                    ? (value) {
+                                        setState(() {
+                                          widget.user.faction = value;
+                                        });
+                                      }
+                                    : null,
+                                items: [
+                                  DropdownMenuItem(
+                                      child: Text("Alliance",
+                                          style: TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Alliance"),
+                                  DropdownMenuItem(
+                                      child: Text("Horde",
+                                          style: TextStyle(
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Horde"),
+                                ]),
+                            Spacer(),
+                            DropdownButton(
+                                value: widget.user.favoriteClass,
+                                hint: Text("Select your favorite class..."),
+                                onChanged: editable
+                                    ? (value) {
+                                        setState(() {
+                                          widget.user.favoriteClass = value;
+                                          setClassImage();
+                                        });
+                                      }
+                                    : null,
+                                items: [
+                                  DropdownMenuItem(
+                                      child: Text("Warrior",
+                                          style: TextStyle(
+                                              color: Color(0xFFC79C6E),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Warrior"),
+                                  DropdownMenuItem(
+                                      child: Text("Paladin",
+                                          style: TextStyle(
+                                              color: Color(0xFFF58CBA),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Paladin"),
+                                  DropdownMenuItem(
+                                      child: Text("Hunter",
+                                          style: TextStyle(
+                                              color: Color(0xFFABD473),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Hunter"),
+                                  DropdownMenuItem(
+                                      child: Text("Rogue",
+                                          style: TextStyle(
+                                              color: Color(0xFFD4AF37),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Rogue"),
+                                  DropdownMenuItem(
+                                      child: Text("Priest",
+                                          style: TextStyle(
+                                              color: Color(0xFF696969),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Priest"),
+                                  DropdownMenuItem(
+                                      child: Text("Shaman",
+                                          style: TextStyle(
+                                              color: Color(0xFF0070DE),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Shaman"),
+                                  DropdownMenuItem(
+                                      child: Text("Mage",
+                                          style: TextStyle(
+                                              color: Color(0xFF69CCF0),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Mage"),
+                                  DropdownMenuItem(
+                                      child: Text("Warlock",
+                                          style: TextStyle(
+                                              color: Color(0xFF9482C9),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Warlock"),
+                                  DropdownMenuItem(
+                                      child: Text("Druid",
+                                          style: TextStyle(
+                                              color: Color(0xFFFF7D0A),
+                                              fontWeight: FontWeight.bold)),
+                                      value: "Druid"),
+                                ])
+                          ]))),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  editable
+                      ? AnimatedOpacity(
+                          opacity: formOpacity,
+                          duration: Duration(seconds: 1),
+                          child: Container(
+                            height: 50,
+                            width: 250,
+                            decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: TextButton(
+                              onPressed: () {
+                                userBloc.updateUser(widget.user);
+                                favoritedList.closeSubscriptions();
+                                favoritesSubscription.cancel();
+                                Navigator.pop(context, widget.user);
+                              },
+                              child: Text(
+                                'Save',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 25),
+                              ),
+                            ),
+                          ))
+                      : Container(),
+                  SizedBox(height: 25),
+                  userFavorites.length > 0
+                      ? Center(
+                          child: Text("User favorites:",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)))
+                      : Center(
+                          child: Text("This user has not favorited any items.",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold))),
+                  userFavorites.length > 0
+                      ? Padding(
+                          padding: EdgeInsets.fromLTRB(50, 0, 50, 10),
+                          child: favoritedList)
+                      : Container()
+                ],
+              ))),
               Align(
                   alignment: Alignment.topRight,
                   child: Padding(
@@ -146,186 +358,14 @@ class _ProfileDialogState extends State<ProfileDialog> {
                       splashColor: Colors.white,
                       customBorder: CircleBorder(),
                       onTap: () {
+                        favoritedList.closeSubscriptions();
+                        favoritesSubscription.cancel();
                         Navigator.pop(context, User());
                       },
                       child: Icon(Icons.close_rounded,
                           color: Colors.black, size: 40.0),
                     ),
                   )),
-              Text("User Profile: " + widget.user.username,
-                  style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 25,
-              ),
-              AnimatedOpacity(
-                  opacity: formOpacity,
-                  duration: Duration(seconds: 1),
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: profileImage, fit: BoxFit.cover)),
-                    ),
-                  )),
-              AnimatedOpacity(
-                  opacity: formOpacity,
-                  duration: Duration(seconds: 1),
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
-                    child: TextField(
-                      readOnly: true,
-                      controller: usernameFieldController,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Username',
-                          hintText: 'Enter your username...'),
-                    ),
-                  )),
-              AnimatedOpacity(
-                  opacity: formOpacity,
-                  duration: Duration(seconds: 1),
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
-                    child: TextField(
-                      readOnly: !editable,
-                      controller: passwordFieldController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
-                          hintText: 'Enter your password...'),
-                    ),
-                  )),
-              SizedBox(height: 25),
-              AnimatedOpacity(
-                  opacity: formOpacity,
-                  duration: Duration(seconds: 1),
-                  child: Padding(
-                      padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
-                      child: Row(children: [
-                        DropdownButton(
-                            value: widget.user.faction,
-                            hint: Text("Select your faction..."),
-                            onChanged: editable
-                                ? (value) {
-                                    setState(() {
-                                      widget.user.faction = value;
-                                    });
-                                  }
-                                : null,
-                            items: [
-                              DropdownMenuItem(
-                                  child: Text("Alliance",
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Alliance"),
-                              DropdownMenuItem(
-                                  child: Text("Horde",
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Horde"),
-                            ]),
-                        Spacer(),
-                        DropdownButton(
-                            value: widget.user.favoriteClass,
-                            hint: Text("Select your favorite class..."),
-                            onChanged: editable
-                                ? (value) {
-                                    setState(() {
-                                      widget.user.favoriteClass = value;
-                                      setClassImage();
-                                    });
-                                  }
-                                : null,
-                            items: [
-                              DropdownMenuItem(
-                                  child: Text("Warrior",
-                                      style: TextStyle(
-                                          color: Color(0xFFC79C6E),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Warrior"),
-                              DropdownMenuItem(
-                                  child: Text("Paladin",
-                                      style: TextStyle(
-                                          color: Color(0xFFF58CBA),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Paladin"),
-                              DropdownMenuItem(
-                                  child: Text("Hunter",
-                                      style: TextStyle(
-                                          color: Color(0xFFABD473),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Hunter"),
-                              DropdownMenuItem(
-                                  child: Text("Rogue",
-                                      style: TextStyle(
-                                          color: Color(0xFFD4AF37),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Rogue"),
-                              DropdownMenuItem(
-                                  child: Text("Priest",
-                                      style: TextStyle(
-                                          color: Color(0xFF696969),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Priest"),
-                              DropdownMenuItem(
-                                  child: Text("Shaman",
-                                      style: TextStyle(
-                                          color: Color(0xFF0070DE),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Shaman"),
-                              DropdownMenuItem(
-                                  child: Text("Mage",
-                                      style: TextStyle(
-                                          color: Color(0xFF69CCF0),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Mage"),
-                              DropdownMenuItem(
-                                  child: Text("Warlock",
-                                      style: TextStyle(
-                                          color: Color(0xFF9482C9),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Warlock"),
-                              DropdownMenuItem(
-                                  child: Text("Druid",
-                                      style: TextStyle(
-                                          color: Color(0xFFFF7D0A),
-                                          fontWeight: FontWeight.bold)),
-                                  value: "Druid"),
-                            ])
-                      ]))),
-              SizedBox(
-                height: 25,
-              ),
-              editable
-                  ? AnimatedOpacity(
-                      opacity: formOpacity,
-                      duration: Duration(seconds: 1),
-                      child: Container(
-                        height: 50,
-                        width: 250,
-                        decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: TextButton(
-                          onPressed: () {
-                            userBloc.updateUser(widget.user);
-                            Navigator.pop(context, widget.user);
-                          },
-                          child: Text(
-                            'Save',
-                            style: TextStyle(color: Colors.white, fontSize: 25),
-                          ),
-                        ),
-                      ))
-                  : Container()
-            ],
-          )),
-    );
+            ])));
   }
 }
