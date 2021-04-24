@@ -7,24 +7,15 @@ class SearchBloc {
 
   final _itemFetcher = PublishSubject<List<Item>>();
 
-  final _profileItemFetcher = PublishSubject<List<Item>>();
-
   final _itemDetailFetcher = PublishSubject<ItemDetail>();
 
   Stream<List<Item>> get itemResult => _itemFetcher.stream;
-
-  Stream<List<Item>> get profileItem => _profileItemFetcher.stream;
 
   Stream<ItemDetail> get itemDetail => _itemDetailFetcher.stream;
 
   searchItems(String searchQuery) async {
     List<Item> items = await repository.searchItems(searchQuery);
     _itemFetcher.sink.add(items);
-  }
-
-  profileSearch(String itemName, int itemId) async {
-    List<Item> items = await repository.searchItems(itemName);
-    _profileItemFetcher.add(items);
   }
 
   getItemDetail(int itemId) async {

@@ -75,7 +75,6 @@ class _CompactItemResultState extends State<CompactItemResult> {
   Item realItem;
   bool loadingFull;
   Image itemImage;
-  StreamSubscription<List<Item>> searchSubscription;
   StreamSubscription<ItemDetail> detailSubscription;
 
   @override
@@ -88,20 +87,14 @@ class _CompactItemResultState extends State<CompactItemResult> {
         setState(() {
           loadingFull = false;
           fullItem = item;
+          itemImage = Image.network(fullItem.icon, scale: 0.33);
+          realItem = Item(
+              itemId: fullItem.itemId,
+              name: fullItem.name,
+              uniqueName: fullItem.uniqueName,
+              imgUrl: fullItem.icon);
         });
-        searchBloc.profileSearch(fullItem.name, fullItem.itemId);
       }
-    });
-
-    searchSubscription = searchBloc.profileItem.listen((items) {
-      items.forEach((element) {
-        if (element.itemId == widget.item.itemId) {
-          setState(() {
-            realItem = element;
-            itemImage = Image.network(realItem.imgUrl, scale: 0.33);
-          });
-        }
-      });
     });
   }
 
@@ -116,7 +109,6 @@ class _CompactItemResultState extends State<CompactItemResult> {
 
   void closeSubscriptions() {
     detailSubscription.cancel();
-    searchSubscription.cancel();
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:classicarchive/home/home_page.dart';
 import 'package:classicarchive/login/login_dialog.dart';
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/register_dialog.dart';
