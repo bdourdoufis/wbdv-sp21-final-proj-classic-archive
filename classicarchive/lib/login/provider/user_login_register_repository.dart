@@ -1,4 +1,6 @@
+import 'package:classicarchive/login/models/favorite.dart';
 import 'package:classicarchive/login/models/user.dart';
+import 'package:classicarchive/search/models/item_models.dart';
 
 import 'user_login_register_client.dart';
 
@@ -18,5 +20,21 @@ class UserRepository {
 
   Future<User> update(User user) async {
     return await client.update(user);
+  }
+
+  Future<Favorite> addFavorite(User user, int itemId, String itemName) async {
+    return await client.addFavorite(user, itemId, itemName);
+  }
+
+  Future<Favorite> removeFavorite(User user, int itemId) async {
+    return await client.removeFavorite(user, itemId);
+  }
+
+  Future<List<Item>> getUserFavorites(User user) async {
+    return await client.getUserFavorites(user);
+  }
+
+  Future<List<User>> getItemFavorites(int itemId) async {
+    return await client.getItemFavorites(itemId);
   }
 }

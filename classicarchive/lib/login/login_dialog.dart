@@ -15,6 +15,7 @@ class _LoginDialogState extends State<LoginDialog> {
 
   @override
   void initState() {
+    super.initState();
     userBloc.userResult.listen((user) async {
       if (user.userId == null) {
         showDialog(

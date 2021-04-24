@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/login_dialog.dart';
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/search/bloc/search_bloc.dart';
+import 'package:classicarchive/search/users_favorited_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
@@ -19,18 +21,36 @@ class ResultDetailDialog extends StatefulWidget {
 class ResultDetailDialogState extends State<ResultDetailDialog> {
   ItemDetail detail;
   StreamSubscription<ItemDetail> subscription;
+  StreamSubscription<List<Item>> favoriteSubscription;
+  StreamSubscription<List<User>> usersSubscription;
   bool favorited;
   bool userLoggedIn;
   String loggedInUsername;
   User loggedInUser;
+  List<User> usersFavorited;
 
   @override
   void initState() {
     super.initState();
+    userBloc.getItemFavorites(widget.itemResult.itemId);
     getUserInfo();
     subscription = searchBloc.itemDetail.listen((itemDetail) {
       setState(() {
         detail = itemDetail;
+      });
+    });
+
+    favoriteSubscription = userBloc.userFavorites.listen((items) {
+      if (items.any((element) => element.itemId == widget.itemResult.itemId)) {
+        setState(() {
+          favorited = true;
+        });
+      }
+    });
+
+    usersSubscription = userBloc.favoritedByUsers.listen((users) {
+      setState(() {
+        usersFavorited = users;
       });
     });
 
@@ -39,6 +59,7 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
     });
 
     favorited = false;
+    usersFavorited = [];
   }
 
   void getUserInfo() async {
@@ -49,6 +70,7 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
     }
     if (userData != null) {
       loggedInUser = User.fromJson(userData);
+      userBloc.getUserFavorites(loggedInUser);
     }
   }
 
@@ -98,9 +120,17 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                               });
                             } else {
                               setState(() {
-                                favorited = !favorited;
+                                if (userLoggedIn) {
+                                  favorited = !favorited;
+                                  if (favorited) {
+                                    userBloc.addFavorite(loggedInUser,
+                                        detail.itemId, detail.name);
+                                  } else {
+                                    userBloc.removeFavorite(
+                                        loggedInUser, detail.itemId);
+                                  }
+                                }
                               });
-                              //TODO: Add to user favorites
                             }
                           });
                         },
@@ -117,6 +147,8 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                       customBorder: CircleBorder(),
                       onTap: () {
                         subscription.cancel();
+                        favoriteSubscription.cancel();
+                        usersSubscription.cancel();
                         Navigator.pop(context, false);
                       },
                       child: Icon(Icons.close_rounded,
@@ -126,58 +158,70 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
               Center(
                   child: Container(
                       width: 600,
-                      child: SingleChildScrollView(
-                          child: Column(children: [
-                        detail == null
-                            ? CircularProgressIndicator()
-                            : Center(
-                                child: Column(children: [
-                                  Image.network(widget.itemResult.imgUrl,
-                                      scale: 0.33),
-                                  Text(detail.name,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: detail.rarityColor,
-                                          fontSize: 20.0)),
-                                  RichText(
-                                      text: TextSpan(
+                      child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 30, 0, 30),
+                          child: SingleChildScrollView(
+                              child: Column(children: [
+                            detail == null
+                                ? CircularProgressIndicator()
+                                : Center(
+                                    child: Column(children: [
+                                      Image.network(widget.itemResult.imgUrl,
+                                          scale: 0.33),
+                                      Text(detail.name,
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          children: [
-                                        TextSpan(
-                                            text: (detail.sellPrice
-                                                    .toString()
-                                                    .padLeft(6, '0')[0] +
-                                                detail.sellPrice
-                                                    .toString()
-                                                    .padLeft(6, '0')[1]),
-                                            style: TextStyle(
-                                                color: Colors.yellow)),
-                                        TextSpan(
-                                            text: (detail.sellPrice
-                                                    .toString()
-                                                    .padLeft(6, '0')[2] +
-                                                detail.sellPrice
-                                                    .toString()
-                                                    .padLeft(6, '0')[3]),
-                                            style:
-                                                TextStyle(color: Colors.grey)),
-                                        TextSpan(
-                                            text: (detail.sellPrice
-                                                    .toString()
-                                                    .padLeft(6, '0')[4] +
-                                                detail.sellPrice
-                                                    .toString()
-                                                    .padLeft(6, '0')[5]),
-                                            style:
-                                                TextStyle(color: Colors.brown))
-                                      ])),
-                                  ..._getLabelText()
-                                ]),
-                              )
-                      ]))))
+                                              color: detail.rarityColor,
+                                              fontSize: 20.0)),
+                                      RichText(
+                                          text: TextSpan(
+                                              style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              children: [
+                                            TextSpan(
+                                                text: (detail.sellPrice
+                                                        .toString()
+                                                        .padLeft(6, '0')[0] +
+                                                    detail.sellPrice
+                                                        .toString()
+                                                        .padLeft(6, '0')[1]),
+                                                style: TextStyle(
+                                                    color: Colors.yellow)),
+                                            TextSpan(
+                                                text: (detail.sellPrice
+                                                        .toString()
+                                                        .padLeft(6, '0')[2] +
+                                                    detail.sellPrice
+                                                        .toString()
+                                                        .padLeft(6, '0')[3]),
+                                                style: TextStyle(
+                                                    color: Colors.grey)),
+                                            TextSpan(
+                                                text: (detail.sellPrice
+                                                        .toString()
+                                                        .padLeft(6, '0')[4] +
+                                                    detail.sellPrice
+                                                        .toString()
+                                                        .padLeft(6, '0')[5]),
+                                                style: TextStyle(
+                                                    color: Colors.brown))
+                                          ])),
+                                      ..._getLabelText()
+                                    ]),
+                                  ),
+                            SizedBox(height: 25),
+                            Center(
+                              child: Text("Users Have Favorited This Item:"),
+                            ),
+                            usersFavorited.length == 0
+                                ? Container()
+                                : Padding(
+                                    padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                                    child: UsersFavoritedList(
+                                        users: usersFavorited))
+                          ])))))
             ])));
   }
 }

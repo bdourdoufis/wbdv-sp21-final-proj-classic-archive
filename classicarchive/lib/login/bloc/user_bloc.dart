@@ -1,8 +1,6 @@
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/provider/user_login_register_repository.dart';
 import 'package:classicarchive/search/models/item_models.dart';
-import 'package:classicarchive/search/provider/item_api_search_repository.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserBloc {
@@ -23,31 +21,46 @@ class UserBloc {
 
   Stream<List<User>> get favoritedByUsers => _itemFavoritedFetcher.stream;
 
-  login(String username, String password) async {
+  void login(String username, String password) async {
     User loggedInUser = await repository.login(username, password);
     _userFetcher.add(loggedInUser);
   }
 
-  registerUser(
+  void registerUser(
       String username, String password, String faction, String favClass) async {
     User registeredUser =
         await repository.register(username, password, faction, favClass);
     _userFetcher.add(registeredUser);
   }
 
-  updateUser(User user) async {
+  void updateUser(User user) async {
     await repository.update(user);
   }
 
-  getUserFavorites(User user) async {
-    //Get a list of items favorited by the given user
+  void addFavorite(User user, int itemId, String itemName) async {
+    await repository.addFavorite(user, itemId, itemName);
   }
 
-  getItemFavorites(int itemId) async {
-    //Get a list of users who favorited this item, need to make profile links
+  void removeFavorite(User user, int itemId) async {
+    await repository.removeFavorite(user, itemId);
   }
 
-  dispose() {}
+  void getUserFavorites(User user) async {
+    await repository.getUserFavorites(user).then((items) {
+      _userFavoritesFetcher.add(items);
+    });
+  }
+
+  void getItemFavorites(int itemId) async {
+    await repository.getItemFavorites(itemId).then((users) {
+      _itemFavoritedFetcher.add(users);
+    });
+  }
+
+  void dispose() {
+    _userFavoritesFetcher.close();
+    _itemFavoritedFetcher.close();
+  }
 }
 
 final userBloc = UserBloc();

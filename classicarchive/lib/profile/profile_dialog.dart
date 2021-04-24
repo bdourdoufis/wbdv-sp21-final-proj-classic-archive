@@ -1,6 +1,5 @@
 import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/models/user.dart';
-import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
@@ -310,8 +309,8 @@ class _ProfileDialogState extends State<ProfileDialog> {
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(20)),
                         child: TextButton(
-                          onPressed: () async {
-                            await userBloc.updateUser(widget.user);
+                          onPressed: () {
+                            userBloc.updateUser(widget.user);
                             Navigator.pop(context, widget.user);
                           },
                           child: Text(

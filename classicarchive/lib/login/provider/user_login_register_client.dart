@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:classicarchive/login/models/favorite.dart';
 import 'package:classicarchive/login/models/user.dart';
+import 'package:classicarchive/search/models/item_models.dart';
 import 'package:http/http.dart' as http;
 
 class UserApiClient {
@@ -23,7 +25,6 @@ class UserApiClient {
     }
 
     final json = jsonDecode(response.body);
-    //TODO: Set up session here? Or maybe after the call returns?
     return User.fromJson(json);
   }
 
@@ -44,7 +45,6 @@ class UserApiClient {
     }
 
     final json = jsonDecode(response.body);
-    //TODO: Set up session here? Or maybe after the call returns?
     return User.fromJson(json);
   }
 
@@ -63,7 +63,74 @@ class UserApiClient {
     }
 
     final json = jsonDecode(response.body);
-    //TODO: Set up session here? Or maybe after the call returns?
     return User.fromJson(json);
+  }
+
+  Future<Favorite> addFavorite(User user, int itemId, String itemName) async {
+    final url = Uri.parse('$_baseFavoriteApiUrl/create');
+    final response = await this.httpClient.post(url, body: {
+      'username': user.username,
+      'itemId': itemId.toString(),
+      'itemName': itemName
+    });
+
+    if (response.statusCode != 200) {
+      throw Exception("Error while adding new favorite.");
+    }
+
+    final json = jsonDecode(response.body);
+    return Favorite.fromJson(json);
+  }
+
+  Future<Favorite> removeFavorite(User user, int itemId) async {
+    final url = Uri.parse('$_baseFavoriteApiUrl/delete');
+    final response = await this.httpClient.delete(url, body: {
+      'username': user.username,
+      'itemId': itemId.toString(),
+    });
+
+    if (response.statusCode != 200) {
+      throw Exception("Error while removing favorite.");
+    }
+
+    final json = jsonDecode(response.body);
+    return Favorite.fromJson(json);
+  }
+
+  Future<List<Item>> getUserFavorites(User user) async {
+    final url = Uri.parse('$_baseFavoriteApiUrl/user/' + user.username);
+    final response = await this.httpClient.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception("Error while retrieving user favorites.");
+    }
+
+    final json = jsonDecode(response.body).cast<Map<String, dynamic>>();
+    List<Favorite> favorites =
+        json.map<Favorite>((entry) => Favorite.fromJson(entry)).toList();
+    List<Item> toReturn = [];
+    for (int i = 0; i < favorites.length; i++) {
+      toReturn
+          .add(Item(itemId: favorites[i].itemId, name: favorites[i].itemName));
+    }
+    return toReturn;
+  }
+
+  Future<List<User>> getItemFavorites(int itemId) async {
+    final url = Uri.parse('$_baseFavoriteApiUrl/item/' + itemId.toString());
+    final response = await this.httpClient.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception("Error while retrieving user favorites.");
+    }
+
+    final json = jsonDecode(response.body).cast<Map<String, dynamic>>();
+    List<Favorite> favorites =
+        json.map<Favorite>((entry) => Favorite.fromJson(entry)).toList();
+    List<User> toReturn = [];
+    for (int i = 0; i < favorites.length; i++) {
+      toReturn.add(User(username: favorites[i].username));
+    }
+    return toReturn;
   }
 }

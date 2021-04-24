@@ -1,10 +1,14 @@
 class Favorite {
   String username;
-  String itemId;
+  int itemId;
+  String itemName;
 
-  Favorite({this.username, this.itemId});
+  Favorite({this.username, this.itemId, this.itemName});
 
   static Favorite fromJson(dynamic json) {
-    return Favorite(username: json["username"], itemId: json["itemId"]);
+    return Favorite(
+        username: json["username"],
+        itemId: json["itemId"],
+        itemName: json["itemName"]);
   }
 }

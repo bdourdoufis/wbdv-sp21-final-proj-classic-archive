@@ -18,6 +18,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
 
   @override
   void initState() {
+    super.initState();
     userBloc.userResult.listen((user) async {
       if (user.userId == null) {
         showDialog(

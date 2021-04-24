@@ -62,21 +62,9 @@ class _HomePageState extends State<HomePage> {
 
   T cast<T>(x) => x is T ? x : null;
 
-  AppBar _buildLoadingAppBar(BuildContext context) {
-    return AppBar(
-      leading: InkWell(
-        //TODO: Make this the alliance symbol in alliance theme, horde symbol in horde theme
-        child: Icon(Icons.home_outlined),
-        onTap: () {},
-      ),
-      actions: [],
-    );
-  }
-
   AppBar _buildLoggedOutAppBar(BuildContext context) {
     return AppBar(
       leading: InkWell(
-        //TODO: Make this the alliance symbol in alliance theme, horde symbol in horde theme
         child: Icon(Icons.home_outlined),
         onTap: () {},
       ),
@@ -114,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                     return RegisterDialog();
                   }).then((user) async {
                 if (user.userId != null) {
-                  await FlutterSession().set("loggedIn", false);
+                  await FlutterSession().set("loggedIn", true);
                   await FlutterSession().set("loggedInUser", user);
                   ThemeMode currentTheme =
                       EasyDynamicTheme.of(context).themeMode;

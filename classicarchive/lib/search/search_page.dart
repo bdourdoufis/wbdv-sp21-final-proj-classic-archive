@@ -89,7 +89,7 @@ class SearchPageState extends State<SearchPage> {
                   builder: (context) {
                     return RegisterDialog();
                   }).then((user) async {
-                await FlutterSession().set("loggedIn", false);
+                await FlutterSession().set("loggedIn", true);
                 await FlutterSession().set("loggedInUser", user);
                 ThemeMode currentTheme = EasyDynamicTheme.of(context).themeMode;
                 while ((currentTheme == ThemeMode.light &&
