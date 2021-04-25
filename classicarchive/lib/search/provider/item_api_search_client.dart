@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:classicarchive/search/models/item_models.dart';
 import 'package:http/http.dart' as http;
 
+/// The client which will directly call the NexusHub API to pull item data.
 class ItemApiSearchClient {
   final _baseSearchUrl = 'https://api.nexushub.co/wow-classic/v1/search?query=';
   final _baseDetailUrl = 'https://api.nexushub.co/wow-classic/v1/item/';

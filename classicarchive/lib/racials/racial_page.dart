@@ -8,11 +8,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
+/// A generic page for displaying a faction's available racial abilities.
+/// In World of Warcraft, player's can select their character's race. Each
+/// race comes with its own set of special abilities.
 class RacialsPage extends StatefulWidget {
   @override
   RacialsPageState createState() => RacialsPageState();
 }
 
+/// The state of a [RacialsPage].
 class RacialsPageState extends State<RacialsPage> {
   bool userLoggedIn = false;
   User loggedInUser;
@@ -196,6 +200,9 @@ class RacialsPageState extends State<RacialsPage> {
   }
 }
 
+/// A widget containing a list of [RacialCard] widgets on a [RacialPage].
+/// The [Race] objects passed into this will be rendered into a horizontal
+/// list of cards which can be scrolled through.
 class RacialsPane extends StatefulWidget {
   final List<Race> races;
 

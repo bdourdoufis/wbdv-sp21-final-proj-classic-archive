@@ -16,19 +16,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
+/// The main page of the application.
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
+/// The state of the website's [HomePage].
 class _HomePageState extends State<HomePage> {
+  /// These values represent the opacity of Text/Button widgets on the
+  /// [HomePage]. We increase these values to 1 shortly after initializing
+  /// the widget to produce a fade-in effect.
   double titleOpacity = 0.0;
   double subtitleOpacity = 0.0;
   double searchButtonOpacity = 0.0;
+
   bool userLoggedIn = false;
   User loggedInUser;
   final controller = TextEditingController();
 
+  /// Here we store subscriptions to streams from our BLoCs. When we call
+  /// methods in the BLoC to retrieve data, the BLoC adds these values to a stream.
+  /// These subscriptions allow us to define a set of actions that will be taken
+  /// in this widget when an update to the stream is detected.
   StreamSubscription<List<Item>> favoritesSubscription;
   CompactItemResult recentFavorite;
 

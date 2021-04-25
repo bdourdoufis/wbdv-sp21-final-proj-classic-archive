@@ -4,10 +4,15 @@ import 'package:flutter/material.dart';
 
 import 'home/home_page.dart';
 
+/// The main method of the website. We wrap our App in an [EasyDynamicThemeWidget]
+/// so that we can dynamically change the website theme between Alliance and
+/// Horde depending on the logged in user status.
 void main() {
   runApp(EasyDynamicThemeWidget(child: MainApp()));
 }
 
+/// These fields here provide the theme data needed to facilitate the
+/// Alliance and Horde specific look and feel values.
 Map<int, Color> hordeSwatch = {
   50: Color.fromRGBO(136, 8, 8, .1),
   100: Color.fromRGBO(136, 8, 8, .2),
@@ -68,13 +73,17 @@ ThemeData hordeTheme = ThemeData(
           button: TextStyle(color: Colors.black))),
 );
 
+/// The main application which contains all of the other widgets.
 class MainApp extends StatefulWidget {
   @override
   _MainAppState createState() => _MainAppState();
 }
 
+/// The state of the [MainApp].
 class _MainAppState extends State<MainApp> {
-  // This widget is the root of your application.
+  // This widget is the root of the application.
+  // We define the light and dark themes here, which will be switched between
+  // dynamically.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -4,6 +4,8 @@ import 'package:classicarchive/search/models/item_models.dart';
 
 import 'user_login_register_client.dart';
 
+/// The repository which acts as an intermediary between the [UserBloc]
+/// and [UserApiClient].
 class UserRepository {
   final UserApiClient client = UserApiClient();
 

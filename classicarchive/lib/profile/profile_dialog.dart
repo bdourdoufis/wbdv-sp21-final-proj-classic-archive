@@ -7,6 +7,7 @@ import 'package:classicarchive/search/models/item_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
+/// Represents a widget containing profile information for a user.
 class ProfileDialog extends StatefulWidget {
   final User user;
   final bool editable;
@@ -17,6 +18,7 @@ class ProfileDialog extends StatefulWidget {
   _ProfileDialogState createState() => _ProfileDialogState();
 }
 
+/// The state of a [ProfileDialog].
 class _ProfileDialogState extends State<ProfileDialog> {
   bool editable;
   double formOpacity = 0.0;

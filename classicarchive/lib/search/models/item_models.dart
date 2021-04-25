@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+/// A model representing generic item information. This model will be
+/// used for item listings, on user profiles and in search results.
 class Item {
   final int itemId;
   final String name;
@@ -12,14 +14,15 @@ class Item {
 
   static Item fromJson(dynamic json) {
     return Item(
-      itemId: json['itemId'],
-      name: json['name'],
-      uniqueName: json['uniqueName'],
-      imgUrl: json['imgUrl']
-    );
+        itemId: json['itemId'],
+        name: json['name'],
+        uniqueName: json['uniqueName'],
+        imgUrl: json['imgUrl']);
   }
 }
 
+/// A model containing more specific details on an [Item]. This model is
+/// generally used when displaying the item detail dialog.
 class ItemDetail {
   final int itemId;
   final String name;
@@ -36,20 +39,19 @@ class ItemDetail {
   // The color corresponding to this items rarity, which is used when displaying its name.
   final Color rarityColor;
 
-  ItemDetail({
-    this.itemId,
-    this.name,
-    this.uniqueName,
-    this.icon,
-    this.tags,
-    this.requiredLevel,
-    this.itemLevel,
-    this.sellPrice,
-    this.vendorPrice,
-    this.itemLink,
-    this.tooltipLabels,
-    this.rarityColor
-  });
+  ItemDetail(
+      {this.itemId,
+      this.name,
+      this.uniqueName,
+      this.icon,
+      this.tags,
+      this.requiredLevel,
+      this.itemLevel,
+      this.sellPrice,
+      this.vendorPrice,
+      this.itemLink,
+      this.tooltipLabels,
+      this.rarityColor});
 
   static ItemDetail fromJson(dynamic json) {
     Color tempColorStorage;
@@ -83,21 +85,18 @@ class ItemDetail {
       labels.add(json['tooltip'][i]['label']);
     }
 
-
-    //json['tooltip'][0]['format']
     return ItemDetail(
-      itemId: json['itemId'],
-      name: json['name'],
-      uniqueName: json['uniqueName'],
-      icon: json['icon'],
-      tags: json['tags'],
-      requiredLevel: json['requiredsLevel'],
-      itemLevel: json['itemLevel'],
-      sellPrice: json['sellPrice'],
-      vendorPrice: json['vendorPrice'],
-      itemLink: json['itemLink'],
-      tooltipLabels: labels,
-      rarityColor: tempColorStorage
-    );
+        itemId: json['itemId'],
+        name: json['name'],
+        uniqueName: json['uniqueName'],
+        icon: json['icon'],
+        tags: json['tags'],
+        requiredLevel: json['requiredsLevel'],
+        itemLevel: json['itemLevel'],
+        sellPrice: json['sellPrice'],
+        vendorPrice: json['vendorPrice'],
+        itemLink: json['itemLink'],
+        tooltipLabels: labels,
+        rarityColor: tempColorStorage);
   }
 }

@@ -3,6 +3,10 @@ import 'package:classicarchive/login/provider/user_login_register_repository.dar
 import 'package:classicarchive/search/models/item_models.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// A BLoC which will be used to interact with our Node server to fetch user
+/// and favorite information. Flutter uses the BLoC pattern as an alternative
+/// to classic MVC. You can read more about it here:
+/// https://www.raywenderlich.com/4074597-getting-started-with-the-bloc-pattern
 class UserBloc {
   UserRepository repository = UserRepository();
 

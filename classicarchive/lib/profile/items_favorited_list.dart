@@ -7,6 +7,8 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// This widget will render a list of cards containing items which have been
+/// favorited by a user.
 class ItemsFavoritedList extends StatefulWidget {
   final List<Item> items;
   final _ItemsFavoritedListState state = _ItemsFavoritedListState();
@@ -20,6 +22,7 @@ class ItemsFavoritedList extends StatefulWidget {
   }
 }
 
+/// The state of an [ItemsFavoritedList].
 class _ItemsFavoritedListState extends State<ItemsFavoritedList> {
   List<CompactItemResult> itemResults;
 
@@ -59,6 +62,10 @@ class _ItemsFavoritedListState extends State<ItemsFavoritedList> {
   }
 }
 
+/// This widget represents a single card which will generally be displayed
+/// in a list of favorited items. A single [CompactItemResult] is also
+/// displayed on the [HomePage] if a user is logged in, to show their most
+/// recent favorite.
 class CompactItemResult extends StatefulWidget {
   final Item item;
   final bool homePageResult;
@@ -73,6 +80,7 @@ class CompactItemResult extends StatefulWidget {
   }
 }
 
+/// The state of a [CompactItemResult].
 class _CompactItemResultState extends State<CompactItemResult> {
   int itemId;
   ItemDetail fullItem;

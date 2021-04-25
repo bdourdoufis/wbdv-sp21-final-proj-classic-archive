@@ -1,3 +1,4 @@
+/// A model representing a single user-item favorite.
 class Favorite {
   String username;
   int itemId;

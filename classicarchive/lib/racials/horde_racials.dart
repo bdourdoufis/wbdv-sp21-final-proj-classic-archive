@@ -3,11 +3,16 @@ import 'package:classicarchive/racials/racial_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/// A [RacialsPage] which will contain information regarding Horde races.
+/// Since the [RacialsPage] is generic, all we need to do here is override
+/// the initializeRaces() and initailizeBackround() methods in the state,
+/// and pass in the Horde-specific data.
 class HordeRacialsPage extends RacialsPage {
   @override
   _HordeRacialsPageState createState() => _HordeRacialsPageState();
 }
 
+/// The state of a [HordeRacialsPage].
 class _HordeRacialsPageState extends RacialsPageState {
   @override
   void initState() {

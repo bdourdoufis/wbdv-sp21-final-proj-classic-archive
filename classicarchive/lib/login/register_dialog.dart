@@ -6,11 +6,13 @@ import 'package:flutter_session/flutter_session.dart';
 
 import 'models/user.dart';
 
+/// The dialog widget which will facilitate user registration.
 class RegisterDialog extends StatefulWidget {
   @override
   _RegisterDialogState createState() => _RegisterDialogState();
 }
 
+/// The state of a [RegisterDialog].
 class _RegisterDialogState extends State<RegisterDialog> {
   double formOpacity = 0.0;
   String faction;

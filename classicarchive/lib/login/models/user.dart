@@ -1,3 +1,4 @@
+/// A model representing a single user.
 class User {
   String userId;
   String username;

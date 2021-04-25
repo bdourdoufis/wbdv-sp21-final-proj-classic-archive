@@ -13,6 +13,9 @@ import 'package:flutter_session/flutter_session.dart';
 
 import 'models/item_models.dart';
 
+/// The item search page. The widget can take in an optional searchValue
+/// which would be passed in from the [HomePage]. If a value is passed in,
+/// the search page will immediately execute that search on initialization.
 class SearchPage extends StatefulWidget {
   final String searchValue;
 
@@ -22,6 +25,7 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => SearchPageState();
 }
 
+/// The state of a [SearchPage].
 class SearchPageState extends State<SearchPage> {
   SearchBar searchBar;
   List<ItemResult> resultSet = [];
@@ -288,6 +292,8 @@ class SearchPageState extends State<SearchPage> {
   }
 }
 
+/// A widget representing a single result on the [SearchPage].
+/// Clicking this widget opens a [ResultDetailDialog].
 class ItemResult extends StatelessWidget {
   final Item item;
   final Function loginCallback;

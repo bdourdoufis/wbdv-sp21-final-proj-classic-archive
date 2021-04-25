@@ -7,6 +7,9 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// A widget which displays a list of [UserResult] cards. This list
+/// will be displayed in the [ResultDetailDialog], to show the users who
+/// have favorited that item.
 class UsersFavoritedList extends StatefulWidget {
   final List<User> users;
 
@@ -15,6 +18,7 @@ class UsersFavoritedList extends StatefulWidget {
   _UsersFavoritedListState createState() => _UsersFavoritedListState();
 }
 
+/// The state of a [UsersFavoritedList].
 class _UsersFavoritedListState extends State<UsersFavoritedList> {
   List<UserResult> userResults;
 
@@ -54,6 +58,9 @@ class _UsersFavoritedListState extends State<UsersFavoritedList> {
   }
 }
 
+/// A single user result card. This will generally be displayed in a
+/// [UsersFavoritedList]. This widget can also be found on the [HomePage],
+/// where it shows the most recently registered user when the user is logged out.
 class UserResult extends StatefulWidget {
   final User user;
   final bool homePageUser;
@@ -68,6 +75,7 @@ class UserResult extends StatefulWidget {
   }
 }
 
+/// The state of a [UserResult].
 class _UserResultState extends State<UserResult> {
   User fullUser;
   bool loadingFull;

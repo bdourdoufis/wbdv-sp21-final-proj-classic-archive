@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// A model representing a World of Warcraft race.
 class Race {
   final AssetImage raceIcon;
   final String name;
@@ -10,6 +11,8 @@ class Race {
   Race({this.raceIcon, this.name, this.homeCity, this.racials});
 }
 
+/// A widget representing a single [RacialAbility]. These widgets will
+/// be used in the [RacialCard] to list out multiple abilities.
 class RacialAbility extends StatelessWidget {
   final AssetImage icon;
   final String name;
@@ -45,6 +48,7 @@ class RacialAbility extends StatelessWidget {
   }
 }
 
+/// Represents a single card on the [RacialPage].
 class RacialCard extends StatefulWidget {
   final Race race;
 
@@ -54,6 +58,7 @@ class RacialCard extends StatefulWidget {
   _RacialCardState createState() => _RacialCardState();
 }
 
+/// The state of a [RacialCard].
 class _RacialCardState extends State<RacialCard> {
   @override
   Widget build(BuildContext context) {

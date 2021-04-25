@@ -3,11 +3,16 @@ import 'package:classicarchive/racials/racial_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/// A [RacialsPage] which will contain information regarding Alliance races.
+/// Since the [RacialsPage] is generic, all we need to do here is override
+/// the initializeRaces() and initailizeBackround() methods in the state,
+/// and pass in the Alliance-specific data.
 class AllianceRacialsPage extends RacialsPage {
   @override
   _AllianceRacialsPageState createState() => _AllianceRacialsPageState();
 }
 
+/// The state of an [AllianceRacialsPage].
 class _AllianceRacialsPageState extends RacialsPageState {
   @override
   void initState() {

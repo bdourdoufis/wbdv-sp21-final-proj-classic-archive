@@ -5,6 +5,8 @@ import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/search/models/item_models.dart';
 import 'package:http/http.dart' as http;
 
+/// The client which will directly call our Node server to pull user/favorite
+/// data.
 class UserApiClient {
   final _baseUserApiUrl =
       'https://classic-archive-user-service.herokuapp.com/api/users';

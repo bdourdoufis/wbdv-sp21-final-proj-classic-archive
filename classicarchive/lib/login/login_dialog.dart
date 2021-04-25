@@ -7,11 +7,15 @@ import 'package:flutter_session/flutter_session.dart';
 
 import 'models/user.dart';
 
+/// The dialog which will facilitate login. Since basically everything
+/// in Flutter is a Widget, a dialog like this is built similarly to any other
+/// page (i.e. [HomePage]).
 class LoginDialog extends StatefulWidget {
   @override
   _LoginDialogState createState() => _LoginDialogState();
 }
 
+/// The state of the [LoginDialog].
 class _LoginDialogState extends State<LoginDialog> {
   double formOpacity = 0.0;
   final usernameFieldController = TextEditingController();

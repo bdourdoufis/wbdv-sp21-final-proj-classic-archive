@@ -10,6 +10,8 @@ import 'package:flutter_session/flutter_session.dart';
 
 import 'models/item_models.dart';
 
+/// The dialog widget which will be displayed when a user clicks on an
+/// item listing to view specific details.
 class ResultDetailDialog extends StatefulWidget {
   final Item itemResult;
 
@@ -18,6 +20,7 @@ class ResultDetailDialog extends StatefulWidget {
   ResultDetailDialogState createState() => ResultDetailDialogState();
 }
 
+/// The state of a [ResultDetailDialog].
 class ResultDetailDialogState extends State<ResultDetailDialog> {
   ItemDetail detail;
   StreamSubscription<ItemDetail> subscription;
