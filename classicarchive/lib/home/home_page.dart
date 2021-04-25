@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                   });
                 },
                 child: Text(
-                  "View Horde Racials",
+                  "Horde Racials",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
               )
@@ -159,11 +159,11 @@ class _HomePageState extends State<HomePage> {
                   });
                 },
                 child: Text(
-                  "View Alliance Racials",
+                  "Alliance Racials",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
               ),
-        SizedBox(width: 50),
+        SizedBox(width: 25),
         TextButton(
             onPressed: () {
               _openProfileDialog();

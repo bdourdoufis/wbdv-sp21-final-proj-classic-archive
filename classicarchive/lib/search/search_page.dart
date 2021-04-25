@@ -179,7 +179,6 @@ class SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
-    getUserInfo();
     searchSubscription = searchBloc.itemResult.listen((result) {
       setState(() {
         if (result.isEmpty) {
@@ -208,11 +207,19 @@ class SearchPageState extends State<SearchPage> {
     }
 
     placeholderText = "Click the magnifying glass to search!";
+    getUserInfo();
   }
 
   void getUserInfo() async {
     dynamic loggedInResult = await FlutterSession().get("loggedIn");
     dynamic userData = await FlutterSession().get("loggedInUser");
+    setState(() {
+      searchBar = SearchBar(
+          inBar: true,
+          setState: setState,
+          onSubmitted: _searchItems,
+          buildDefaultAppBar: _buildLoggedOutAppBar);
+    });
     if (cast<bool>(loggedInResult) != null) {
       userLoggedIn = cast<bool>(loggedInResult);
       if (userLoggedIn == true) {
@@ -231,13 +238,6 @@ class SearchPageState extends State<SearchPage> {
             buildDefaultAppBar: _buildLoggedOutAppBar);
       }
     }
-    setState(() {
-      searchBar = SearchBar(
-          inBar: true,
-          setState: setState,
-          onSubmitted: _searchItems,
-          buildDefaultAppBar: _buildLoggedOutAppBar);
-    });
   }
 
   T cast<T>(x) => x is T ? x : null;
