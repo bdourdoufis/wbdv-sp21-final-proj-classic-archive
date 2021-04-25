@@ -6,8 +6,10 @@ import 'package:classicarchive/search/models/item_models.dart';
 import 'package:http/http.dart' as http;
 
 class UserApiClient {
-  final _baseUserApiUrl = 'http://localhost:4000/api/users';
-  final _baseFavoriteApiUrl = 'http://localhost:4000/api/favorites';
+  final _baseUserApiUrl =
+      'https://classic-archive-user-service.herokuapp.com/api/users';
+  final _baseFavoriteApiUrl =
+      'https://classic-archive-user-service.herokuapp.com/api/favorites';
   final http.Client httpClient = http.Client();
 
   UserApiClient();
