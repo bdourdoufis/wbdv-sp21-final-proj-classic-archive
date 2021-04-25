@@ -33,9 +33,11 @@ class _ItemsFavoritedListState extends State<ItemsFavoritedList> {
   }
 
   void closeSubscriptions() {
-    itemResults.forEach((element) {
-      element.closeSubscriptions();
-    });
+    if (itemResults != null) {
+      itemResults.forEach((element) {
+        element.closeSubscriptions();
+      });
+    }
   }
 
   @override
@@ -99,6 +101,7 @@ class _CompactItemResultState extends State<CompactItemResult> {
   }
 
   void _showItemDialog(BuildContext context) {
+    Navigator.pop(context);
     showDialog(
         context: context,
         barrierDismissible: false,

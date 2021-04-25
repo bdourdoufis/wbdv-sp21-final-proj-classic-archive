@@ -9,8 +9,9 @@ import 'package:flutter_session/flutter_session.dart';
 
 class ProfileDialog extends StatefulWidget {
   final User user;
+  final bool editable;
 
-  ProfileDialog({this.user});
+  ProfileDialog({this.user, this.editable});
 
   @override
   _ProfileDialogState createState() => _ProfileDialogState();
@@ -31,10 +32,14 @@ class _ProfileDialogState extends State<ProfileDialog> {
   @override
   void initState() {
     super.initState();
-    editable = false;
+    if (widget.editable == null) {
+      editable = false;
+      verifyUser();
+    } else {
+      editable = widget.editable;
+    }
     userFavorites = [];
     userBloc.getUserFavorites(widget.user);
-    verifyUser();
 
     favoritesSubscription = userBloc.userFavorites.listen((items) {
       setState(() {
@@ -214,98 +219,104 @@ class _ProfileDialogState extends State<ProfileDialog> {
                       child: Padding(
                           padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
                           child: Row(children: [
-                            DropdownButton(
-                                value: widget.user.faction,
-                                hint: Text("Select your faction..."),
-                                onChanged: editable
-                                    ? (value) {
-                                        setState(() {
-                                          widget.user.faction = value;
-                                        });
-                                      }
-                                    : null,
-                                items: [
-                                  DropdownMenuItem(
-                                      child: Text("Alliance",
-                                          style: TextStyle(
-                                              color: Colors.blue,
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Alliance"),
-                                  DropdownMenuItem(
-                                      child: Text("Horde",
-                                          style: TextStyle(
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Horde"),
-                                ]),
+                            Column(children: [
+                              Text("Faction"),
+                              DropdownButton(
+                                  value: widget.user.faction,
+                                  hint: Text("Select your faction..."),
+                                  onChanged: editable
+                                      ? (value) {
+                                          setState(() {
+                                            widget.user.faction = value;
+                                          });
+                                        }
+                                      : null,
+                                  items: [
+                                    DropdownMenuItem(
+                                        child: Text("Alliance",
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Alliance"),
+                                    DropdownMenuItem(
+                                        child: Text("Horde",
+                                            style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Horde"),
+                                  ])
+                            ]),
                             Spacer(),
-                            DropdownButton(
-                                value: widget.user.favoriteClass,
-                                hint: Text("Select your favorite class..."),
-                                onChanged: editable
-                                    ? (value) {
-                                        setState(() {
-                                          widget.user.favoriteClass = value;
-                                          setClassImage();
-                                        });
-                                      }
-                                    : null,
-                                items: [
-                                  DropdownMenuItem(
-                                      child: Text("Warrior",
-                                          style: TextStyle(
-                                              color: Color(0xFFC79C6E),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Warrior"),
-                                  DropdownMenuItem(
-                                      child: Text("Paladin",
-                                          style: TextStyle(
-                                              color: Color(0xFFF58CBA),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Paladin"),
-                                  DropdownMenuItem(
-                                      child: Text("Hunter",
-                                          style: TextStyle(
-                                              color: Color(0xFFABD473),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Hunter"),
-                                  DropdownMenuItem(
-                                      child: Text("Rogue",
-                                          style: TextStyle(
-                                              color: Color(0xFFD4AF37),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Rogue"),
-                                  DropdownMenuItem(
-                                      child: Text("Priest",
-                                          style: TextStyle(
-                                              color: Color(0xFF696969),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Priest"),
-                                  DropdownMenuItem(
-                                      child: Text("Shaman",
-                                          style: TextStyle(
-                                              color: Color(0xFF0070DE),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Shaman"),
-                                  DropdownMenuItem(
-                                      child: Text("Mage",
-                                          style: TextStyle(
-                                              color: Color(0xFF69CCF0),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Mage"),
-                                  DropdownMenuItem(
-                                      child: Text("Warlock",
-                                          style: TextStyle(
-                                              color: Color(0xFF9482C9),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Warlock"),
-                                  DropdownMenuItem(
-                                      child: Text("Druid",
-                                          style: TextStyle(
-                                              color: Color(0xFFFF7D0A),
-                                              fontWeight: FontWeight.bold)),
-                                      value: "Druid"),
-                                ])
+                            Column(children: [
+                              Text("Favorite Class"),
+                              DropdownButton(
+                                  value: widget.user.favoriteClass,
+                                  hint: Text("Select your favorite class..."),
+                                  onChanged: editable
+                                      ? (value) {
+                                          setState(() {
+                                            widget.user.favoriteClass = value;
+                                            setClassImage();
+                                          });
+                                        }
+                                      : null,
+                                  items: [
+                                    DropdownMenuItem(
+                                        child: Text("Warrior",
+                                            style: TextStyle(
+                                                color: Color(0xFFC79C6E),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Warrior"),
+                                    DropdownMenuItem(
+                                        child: Text("Paladin",
+                                            style: TextStyle(
+                                                color: Color(0xFFF58CBA),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Paladin"),
+                                    DropdownMenuItem(
+                                        child: Text("Hunter",
+                                            style: TextStyle(
+                                                color: Color(0xFFABD473),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Hunter"),
+                                    DropdownMenuItem(
+                                        child: Text("Rogue",
+                                            style: TextStyle(
+                                                color: Color(0xFFD4AF37),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Rogue"),
+                                    DropdownMenuItem(
+                                        child: Text("Priest",
+                                            style: TextStyle(
+                                                color: Color(0xFF696969),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Priest"),
+                                    DropdownMenuItem(
+                                        child: Text("Shaman",
+                                            style: TextStyle(
+                                                color: Color(0xFF0070DE),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Shaman"),
+                                    DropdownMenuItem(
+                                        child: Text("Mage",
+                                            style: TextStyle(
+                                                color: Color(0xFF69CCF0),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Mage"),
+                                    DropdownMenuItem(
+                                        child: Text("Warlock",
+                                            style: TextStyle(
+                                                color: Color(0xFF9482C9),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Warlock"),
+                                    DropdownMenuItem(
+                                        child: Text("Druid",
+                                            style: TextStyle(
+                                                color: Color(0xFFFF7D0A),
+                                                fontWeight: FontWeight.bold)),
+                                        value: "Druid"),
+                                  ])
+                            ])
                           ]))),
                   SizedBox(
                     height: 25,

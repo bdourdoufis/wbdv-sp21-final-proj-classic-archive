@@ -28,9 +28,11 @@ class _UsersFavoritedListState extends State<UsersFavoritedList> {
   }
 
   void closeSubscriptions() {
-    userResults.forEach((element) {
-      element.closeSubscriptions();
-    });
+    if (userResults != null) {
+      userResults.forEach((element) {
+        element.closeSubscriptions();
+      });
+    }
   }
 
   @override
@@ -156,11 +158,12 @@ class _UserResultState extends State<UserResult> {
   }
 
   void _showProfileDialog(BuildContext context) {
+    Navigator.pop(context);
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) {
-          return ProfileDialog(user: fullUser);
+          return ProfileDialog(user: fullUser, editable: false);
         }).then((value) {
       if (value == true) {
         _showProfileDialog(context);

@@ -61,6 +61,7 @@ class _RacialCardState extends State<RacialCard> {
         width: 400,
         height: 800,
         child: Card(
+          elevation: 20,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
           ),
