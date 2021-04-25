@@ -194,7 +194,7 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                                                         .toString()
                                                         .padLeft(6, '0')[1]),
                                                 style: TextStyle(
-                                                    color: Colors.yellow)),
+                                                    color: Color(0xFFD4AF37))),
                                             TextSpan(
                                                 text: (detail.sellPrice
                                                         .toString()

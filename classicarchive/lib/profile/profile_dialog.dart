@@ -190,21 +190,23 @@ class _ProfileDialogState extends State<ProfileDialog> {
                               hintText: 'Enter your username...'),
                         ),
                       )),
-                  AnimatedOpacity(
-                      opacity: formOpacity,
-                      duration: Duration(seconds: 1),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
-                        child: TextField(
-                          readOnly: !editable,
-                          controller: passwordFieldController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Password',
-                              hintText: 'Enter your password...'),
-                        ),
-                      )),
+                  editable
+                      ? AnimatedOpacity(
+                          opacity: formOpacity,
+                          duration: Duration(seconds: 1),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                            child: TextField(
+                              readOnly: !editable,
+                              controller: passwordFieldController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Password',
+                                  hintText: 'Enter your password...'),
+                            ),
+                          ))
+                      : Container(),
                   SizedBox(height: 25),
                   AnimatedOpacity(
                       opacity: formOpacity,
@@ -320,6 +322,8 @@ class _ProfileDialogState extends State<ProfileDialog> {
                                 borderRadius: BorderRadius.circular(20)),
                             child: TextButton(
                               onPressed: () {
+                                widget.user.password =
+                                    passwordFieldController.text;
                                 userBloc.updateUser(widget.user);
                                 favoritedList.closeSubscriptions();
                                 favoritesSubscription.cancel();
