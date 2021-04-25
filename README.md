@@ -10,7 +10,7 @@ Logged-in users may also navigate to a page containing information on their sele
 
 ## The Flutter Framework
 
-This project's front-end is built in Flutter, a UI framework created by Google which allows for the creation of native mobile, web, and desktop applications from a single codebase. I chose to create this project using Flutter (with instructor permission) as it is what we have recently started using at my work for more general information regarding Flutter, see [here](https://flutter.dev/).
+This project's front-end is built in Flutter, a UI framework created by Google which allows for the creation of native mobile, web, and desktop applications from a single codebase. I chose to create this project using Flutter (with instructor permission) as it is what we have recently started using at my work. For more general information regarding Flutter, see [here](https://flutter.dev/).
 
 In Flutter, nearly every component of a project is defined as a Widget, from full pages, to specific internal components, to dialog boxes. Widgets are generally built based on their state, which can be defined as a separate object along with the main widget. When a widget's state changes, the framework will rebuild the widget using its updated state values. To learn more about widgets in Flutter, see [here](https://flutter.dev/docs/development/ui/widgets-intro).
 
