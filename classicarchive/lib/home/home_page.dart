@@ -313,13 +313,19 @@ class _HomePageState extends State<HomePage> {
                 ? recentFavorite != null
                     ? Text("Your most recent favorite:",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24))
-                    : Text("You have no recent favorites.")
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Colors.white))
+                    : Text("You have no recent favorites.",
+                        style: TextStyle(color: Colors.white))
                 : recentUser != null
                     ? Text("Newest user:",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24))
-                    : Text("There are no registered users."),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Colors.white))
+                    : Text("There are no registered users.",
+                        style: TextStyle(color: Colors.white)),
             userLoggedIn
                 ? recentFavorite != null
                     ? Container(width: 600, child: recentFavorite)
