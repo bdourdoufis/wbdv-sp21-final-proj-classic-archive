@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getUserInfo();
+    userBloc.getAllUsers();
     //Fade in home page widgets
     Future.delayed(Duration(milliseconds: 300), () {
       setState(() {
@@ -94,7 +95,6 @@ class _HomePageState extends State<HomePage> {
         userBloc.getHomepageFavorites(loggedInUser);
       } else {
         userLoggedIn = false;
-        userBloc.getAllUsers();
       }
     });
   }
