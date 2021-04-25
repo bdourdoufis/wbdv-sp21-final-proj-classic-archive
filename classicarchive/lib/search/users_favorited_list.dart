@@ -56,9 +56,10 @@ class _UsersFavoritedListState extends State<UsersFavoritedList> {
 
 class UserResult extends StatefulWidget {
   final User user;
+  final bool homePageUser;
   final _UserResultState state = _UserResultState();
 
-  UserResult({@required this.user});
+  UserResult({@required this.user, this.homePageUser});
 
   _UserResultState createState() => state;
 
@@ -158,7 +159,9 @@ class _UserResultState extends State<UserResult> {
   }
 
   void _showProfileDialog(BuildContext context) {
-    Navigator.pop(context);
+    if (widget.homePageUser == null) {
+      Navigator.pop(context);
+    }
     showDialog(
         context: context,
         barrierDismissible: false,

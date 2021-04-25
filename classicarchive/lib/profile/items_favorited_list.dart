@@ -61,9 +61,10 @@ class _ItemsFavoritedListState extends State<ItemsFavoritedList> {
 
 class CompactItemResult extends StatefulWidget {
   final Item item;
+  final bool homePageResult;
   final _CompactItemResultState state = _CompactItemResultState();
 
-  CompactItemResult({@required this.item});
+  CompactItemResult({@required this.item, this.homePageResult});
 
   _CompactItemResultState createState() => state;
 
@@ -73,23 +74,37 @@ class CompactItemResult extends StatefulWidget {
 }
 
 class _CompactItemResultState extends State<CompactItemResult> {
+  int itemId;
   ItemDetail fullItem;
   Item realItem;
   bool loadingFull;
   Image itemImage;
   StreamSubscription<ItemDetail> detailSubscription;
 
+  // This is only used on the home page,
+  // to update the user's most recent favorite.
+  setItem(Item item) {
+    setState(() {
+      loadingFull = true;
+      itemId = item.itemId;
+      searchBloc.getItemDetail(item.itemId);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    itemId = widget.item.itemId;
     loadingFull = true;
     searchBloc.getItemDetail(widget.item.itemId);
     detailSubscription = searchBloc.itemDetail.listen((item) {
-      if (item.itemId == widget.item.itemId) {
+      if (item.itemId == itemId) {
         setState(() {
           loadingFull = false;
           fullItem = item;
           itemImage = Image.network(fullItem.icon, scale: 0.33);
+          // We need to make an actual Item object here which can be passed
+          // into the [ResultDetailDialog].
           realItem = Item(
               itemId: fullItem.itemId,
               name: fullItem.name,
@@ -101,7 +116,9 @@ class _CompactItemResultState extends State<CompactItemResult> {
   }
 
   void _showItemDialog(BuildContext context) {
-    Navigator.pop(context);
+    if (widget.homePageResult == null) {
+      Navigator.pop(context);
+    }
     showDialog(
         context: context,
         barrierDismissible: false,

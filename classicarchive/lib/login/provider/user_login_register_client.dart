@@ -78,6 +78,18 @@ class UserApiClient {
     return User.fromJson(json[0]);
   }
 
+  Future<List<User>> getAllUsers() async {
+    final url = Uri.parse('$_baseUserApiUrl');
+    final response = await this.httpClient.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception("Error while retrieving all users.");
+    }
+
+    final json = jsonDecode(response.body).cast<Map<String, dynamic>>();
+    return json.map<User>((entry) => User.fromJson(entry)).toList();
+  }
+
   Future<Favorite> addFavorite(User user, int itemId, String itemName) async {
     final url = Uri.parse('$_baseFavoriteApiUrl/create');
     final response = await this.httpClient.post(url, body: {

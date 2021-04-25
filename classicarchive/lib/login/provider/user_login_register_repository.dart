@@ -26,6 +26,10 @@ class UserRepository {
     return await client.profile(username);
   }
 
+  Future<List<User>> getAllUsers() async {
+    return await client.getAllUsers();
+  }
+
   Future<Favorite> addFavorite(User user, int itemId, String itemName) async {
     return await client.addFavorite(user, itemId, itemName);
   }

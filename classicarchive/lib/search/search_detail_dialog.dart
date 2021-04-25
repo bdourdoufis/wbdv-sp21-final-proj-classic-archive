@@ -133,7 +133,10 @@ class ResultDetailDialogState extends State<ResultDetailDialog> {
                                   } else {
                                     userBloc.removeFavorite(
                                         loggedInUser, detail.itemId);
-                                    usersFavorited.remove(loggedInUser);
+                                    usersFavorited.remove(
+                                        usersFavorited.firstWhere((element) =>
+                                            element.username ==
+                                            loggedInUser.username));
                                   }
                                 }
                               });

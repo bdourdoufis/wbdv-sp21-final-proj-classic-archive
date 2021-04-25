@@ -1,10 +1,16 @@
+import 'dart:async';
+
+import 'package:classicarchive/login/bloc/user_bloc.dart';
 import 'package:classicarchive/login/login_dialog.dart';
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/register_dialog.dart';
+import 'package:classicarchive/profile/items_favorited_list.dart';
 import 'package:classicarchive/profile/profile_dialog.dart';
 import 'package:classicarchive/racials/alliance_racials.dart';
 import 'package:classicarchive/racials/horde_racials.dart';
+import 'package:classicarchive/search/models/item_models.dart';
 import 'package:classicarchive/search/search_page.dart';
+import 'package:classicarchive/search/users_favorited_list.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +26,14 @@ class _HomePageState extends State<HomePage> {
   double subtitleOpacity = 0.0;
   double searchButtonOpacity = 0.0;
   bool userLoggedIn = false;
-
   User loggedInUser;
-
   final controller = TextEditingController();
+
+  StreamSubscription<List<Item>> favoritesSubscription;
+  CompactItemResult recentFavorite;
+
+  StreamSubscription<List<User>> usersSubscription;
+  UserResult recentUser;
 
   @override
   void initState() {
@@ -45,6 +55,33 @@ class _HomePageState extends State<HomePage> {
     Future.delayed(Duration(milliseconds: 800), () {
       searchButtonOpacity = 1.0;
     });
+
+    favoritesSubscription = userBloc.homepageFavorites.listen((favorites) {
+      if (favorites.isEmpty) {
+        setState(() {
+          recentFavorite = null;
+        });
+      } else {
+        setState(() {
+          if (recentFavorite == null) {
+            recentFavorite =
+                CompactItemResult(item: favorites.last, homePageResult: true);
+          } else {
+            recentFavorite.state.setItem(favorites.last);
+          }
+        });
+      }
+    });
+
+    usersSubscription = userBloc.allUsers.listen((users) {
+      if (users.isEmpty) {
+        recentUser = null;
+      } else {
+        setState(() {
+          recentUser = UserResult(user: users.last, homePageUser: true);
+        });
+      }
+    });
   }
 
   void getUserInfo() async {
@@ -54,8 +91,10 @@ class _HomePageState extends State<HomePage> {
       if (cast<bool>(loggedInResult) != null) {
         userLoggedIn = cast<bool>(loggedInResult);
         loggedInUser = User.fromJson(userData);
+        userBloc.getHomepageFavorites(loggedInUser);
       } else {
         userLoggedIn = false;
+        userBloc.getAllUsers();
       }
     });
   }
@@ -115,6 +154,7 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     userLoggedIn = true;
                     loggedInUser = user;
+                    userBloc.getUserFavorites(loggedInUser);
                   });
                 }
               });
@@ -181,6 +221,9 @@ class _HomePageState extends State<HomePage> {
               await FlutterSession().set("loggedInUser", User());
               setState(() {
                 userLoggedIn = false;
+                recentFavorite = null;
+                recentUser = null;
+                userBloc.getAllUsers();
               });
             },
             child: Text("Log Out",
@@ -202,7 +245,10 @@ class _HomePageState extends State<HomePage> {
       });
     } else {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SearchPage()));
+              context, MaterialPageRoute(builder: (context) => SearchPage()))
+          .then((value) {
+        getUserInfo();
+      });
     }
   }
 
@@ -262,7 +308,26 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
             ),
-            SizedBox(height: 200),
+            SizedBox(height: 75),
+            userLoggedIn
+                ? recentFavorite != null
+                    ? Text("Your most recent favorite:",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24))
+                    : Text("You have no recent favorites.")
+                : recentUser != null
+                    ? Text("Newest user:",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24))
+                    : Text("There are no registered users."),
+            userLoggedIn
+                ? recentFavorite != null
+                    ? Container(width: 600, child: recentFavorite)
+                    : Container()
+                : recentUser != null
+                    ? Container(width: 600, child: recentUser)
+                    : Container(),
+            SizedBox(height: 75),
             Container(
                 width: 800,
                 child: TextField(
