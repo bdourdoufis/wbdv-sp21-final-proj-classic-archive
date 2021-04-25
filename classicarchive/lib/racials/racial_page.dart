@@ -2,49 +2,29 @@ import 'package:classicarchive/login/login_dialog.dart';
 import 'package:classicarchive/login/models/user.dart';
 import 'package:classicarchive/login/register_dialog.dart';
 import 'package:classicarchive/profile/profile_dialog.dart';
-import 'package:classicarchive/racials/alliance_racials.dart';
-import 'package:classicarchive/racials/horde_racials.dart';
-import 'package:classicarchive/search/search_page.dart';
+import 'package:classicarchive/racials/racial_card.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 
-class HomePage extends StatefulWidget {
+class RacialsPage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  RacialsPageState createState() => RacialsPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  double titleOpacity = 0.0;
-  double subtitleOpacity = 0.0;
-  double searchButtonOpacity = 0.0;
+class RacialsPageState extends State<RacialsPage> {
   bool userLoggedIn = false;
-
   User loggedInUser;
-
-  final controller = TextEditingController();
+  List<Race> races;
+  AssetImage background;
 
   @override
   void initState() {
     super.initState();
     getUserInfo();
-    //Fade in home page widgets
-    Future.delayed(Duration(milliseconds: 300), () {
-      setState(() {
-        titleOpacity = 1.0;
-      });
-    });
-
-    Future.delayed(Duration(milliseconds: 600), () {
-      setState(() {
-        subtitleOpacity = 1.0;
-      });
-    });
-
-    Future.delayed(Duration(milliseconds: 800), () {
-      searchButtonOpacity = 1.0;
-    });
+    initializeRaces();
+    initializeBackground();
   }
 
   void getUserInfo() async {
@@ -62,11 +42,17 @@ class _HomePageState extends State<HomePage> {
 
   T cast<T>(x) => x is T ? x : null;
 
+  void initializeRaces() {}
+
+  void initializeBackground() {}
+
   AppBar _buildLoggedOutAppBar(BuildContext context) {
     return AppBar(
       leading: InkWell(
         child: Icon(Icons.home_outlined),
-        onTap: () {},
+        onTap: () {
+          Navigator.pop(context);
+        },
       ),
       actions: [
         TextButton(
@@ -129,41 +115,11 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       leading: InkWell(
         child: Icon(Icons.home_outlined),
-        onTap: () {},
+        onTap: () {
+          Navigator.pop(context);
+        },
       ),
       actions: [
-        loggedInUser.faction == "Horde"
-            ? TextButton(
-                onPressed: () {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HordeRacialsPage()))
-                      .then((value) {
-                    getUserInfo();
-                  });
-                },
-                child: Text(
-                  "View Horde Racials",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-              )
-            : TextButton(
-                onPressed: () {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AllianceRacialsPage()))
-                      .then((value) {
-                    getUserInfo();
-                  });
-                },
-                child: Text(
-                  "View Alliance Racials",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-              ),
-        SizedBox(width: 50),
         TextButton(
             onPressed: () {
               _openProfileDialog();
@@ -182,6 +138,7 @@ class _HomePageState extends State<HomePage> {
               setState(() {
                 userLoggedIn = false;
               });
+              Navigator.pop(context);
             },
             child: Text("Log Out",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)))
@@ -189,24 +146,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _routeToSearch(BuildContext context) {
-    String searchVal = controller.text;
-    controller.text = "";
-    if (searchVal.length > 0) {
-      Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SearchPage(searchValue: searchVal)))
-          .then((value) {
-        getUserInfo();
-      });
-    } else {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SearchPage()));
-    }
-  }
-
   void _openProfileDialog() {
+    String currentFaction = loggedInUser.faction;
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -222,10 +163,14 @@ class _HomePageState extends State<HomePage> {
           EasyDynamicTheme.of(context).changeTheme();
           currentTheme = EasyDynamicTheme.of(context).themeMode;
         }
-        setState(() {
-          loggedInUser = user;
-        });
-        _openProfileDialog();
+        if (currentFaction != user.faction) {
+          Navigator.pop(context);
+        } else {
+          setState(() {
+            loggedInUser = user;
+          });
+          _openProfileDialog();
+        }
       }
     });
   }
@@ -236,55 +181,49 @@ class _HomePageState extends State<HomePage> {
         appBar: userLoggedIn
             ? _buildLoggedInAppBar(context)
             : _buildLoggedOutAppBar(context),
-        body: Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/images/dark_portal.jpg"),
-                  fit: BoxFit.cover)),
-          child: Center(
-              child: Column(children: [
-            SizedBox(height: 50),
-            AnimatedOpacity(
-              opacity: titleOpacity,
-              duration: Duration(seconds: 2),
-              child: Text("Classic Archive",
-                  style: TextStyle(
-                      fontSize: 72,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-            ),
-            AnimatedOpacity(
-              opacity: subtitleOpacity,
-              duration: Duration(seconds: 2),
-              child: Text("World of Warcraft: Classic Item Database",
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-            ),
-            SizedBox(height: 200),
-            Container(
-                width: 800,
-                child: TextField(
-                    controller: controller,
-                    onSubmitted: (value) => _routeToSearch(context),
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelStyle: TextStyle(color: Colors.grey),
-                        border: OutlineInputBorder(),
-                        labelText: "Search for an item..."))),
-            SizedBox(height: 50),
-            SizedBox(
-                width: 150,
-                height: 75,
-                child: ElevatedButton(
-                    child: Text("SEARCH",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 32)),
-                    onPressed: () => _routeToSearch(context)))
-          ])),
-        ));
+        body: Stack(children: [
+          Container(
+              decoration: BoxDecoration(
+                  image:
+                      DecorationImage(image: background, fit: BoxFit.cover))),
+          Center(
+              child: Container(
+                  child: Padding(
+            padding: EdgeInsets.fromLTRB(50, 50, 50, 125),
+            child: RacialsPane(races: races),
+          ))),
+        ]));
+  }
+}
+
+class RacialsPane extends StatefulWidget {
+  final List<Race> races;
+
+  RacialsPane({this.races});
+
+  @override
+  _RacialsPaneState createState() => _RacialsPaneState();
+}
+
+class _RacialsPaneState extends State<RacialsPane> {
+  List<RacialCard> cards;
+
+  @override
+  void initState() {
+    super.initState();
+    cards = [];
+    widget.races.forEach((element) {
+      cards.add(RacialCard(race: element));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [...cards],
+      ),
+    );
   }
 }

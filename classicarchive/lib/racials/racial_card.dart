@@ -77,8 +77,13 @@ class _RacialCardState extends State<RacialCard> {
                           image: DecorationImage(
                               image: widget.race.raceIcon, fit: BoxFit.cover)),
                     ))),
-                Center(child: Text(widget.race.name)),
-                Center(child: Text(widget.race.homeCity)),
+                Center(
+                    child: Text(widget.race.name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24))),
+                Center(
+                    child: Text(widget.race.homeCity,
+                        style: TextStyle(fontSize: 16))),
                 SizedBox(height: 40),
                 ...widget.race.racials
               ],
